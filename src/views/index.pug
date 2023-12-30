@@ -1,5 +1,16 @@
 extends layout
 
 block content
-    h1= title
-    p Welcome to #{title}
+    fieldset
+        legend Codenames
+        p(style="font-weight: bold") Step 1
+        label(for="username") Username
+        input(type="text" name="username" id="username")
+        p(style="font-weight: bold") Step 2
+        button#create-game Create game
+        p OR
+        label(for="room-code") Room code
+        input(type="text" name="room-code" id="room-code")
+        br
+        button#join-game Join game
+    script(src="/js/index.js" defer)
