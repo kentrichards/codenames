@@ -27,11 +27,11 @@ app.get('/', (req, res) => {
     res.render('index')
 })
 
-io.on('connection', (socket) => {
-    socket.join("main")
-    console.log('a user connected to main');
-    
-    socket.on('createRoom', (roomCode) => {
+io.on('connection', socket => {
+    socket.join('main')
+    console.log('a user connected to main')
+
+    socket.on('createRoom', roomCode => {
         const newRoom = {
             roomCode: roomCode,
             players: [],
@@ -44,32 +44,32 @@ io.on('connection', (socket) => {
         console.log(socket.rooms)
     })
 
-    socket.on('joinRoom', (roomCode) => {
+    socket.on('joinRoom', roomCode => {
         // Also have to:
-            // add player to players list of appropriate room
-            // check that room exists
-            socket.join(roomCode)
-            socket.leave('main')
+        // add player to players list of appropriate room
+        // check that room exists
+        socket.join(roomCode)
+        socket.leave('main')
 
         console.log(socket.rooms)
     })
 
     socket.on('showGames', () => {
         // Show all rooms
-        const rooms = io.of("/").adapter.rooms;
+        const rooms = io.of('/').adapter.rooms
         console.log(rooms)
         io.emit('rooms', rooms)
     })
     
-    socket.on('msgRm', (room) => {
+    socket.on('msgRm', room => {
         io.to(room).emit('rmMsg', `Hello to room ${room}`)
     })
 
     socket.on('disconnect', reason => {
-        console.log(`a user disconnected because of ${reason}`);
-    });
-});
+        console.log(`a user disconnected because of ${reason}`)
+    })
+})
 
 server.listen(port, () => {
-    console.log('server running at http://localhost:3000');
-});
+    console.log('server running at http://localhost:3000')
+})
