@@ -1,7 +1,16 @@
 import express from 'express'
 import { generateRoomCode } from './room.js'
+import { getRoom } from './room.js'
 
 const router = express.Router()
+
+const activeRooms = []
+
+function broadcast(room, msg) {
+    room.players.forEach(ws => {
+        ws.send(msg)
+    })
+}
 
 // eslint-disable-next-line no-unused-vars
 export default expressWsInstance => {
@@ -11,9 +20,16 @@ export default expressWsInstance => {
 
     router.get('/createGame', (req, res) => {
         const username = req.query.username
+        const newRoomCode = generateRoomCode()
+        const newRoom = {
+            roomCode: newRoomCode,
+            players: [],
+            gameState: {},
+        }
+        activeRooms.push(newRoom)
         res.cookie('username', username)
         res.cookie('SameSite', 'Strict')
-        res.redirect(`/${generateRoomCode()}`)
+        res.redirect(`/${newRoomCode}`)
     })
 
     router.get('/:roomCode', (req, res) => {
@@ -24,6 +40,7 @@ export default expressWsInstance => {
 
     router.ws('/:roomCode', (ws, req) => {
         const roomCode = req.params.roomCode
+        const room = getRoom(activeRooms, roomCode)
         const username = req.cookies.username
 
         ws.on('message', (/** @type {String} */ msg) => {
@@ -35,12 +52,15 @@ export default expressWsInstance => {
             }
 
             if (action.type === 'userConnected') {
-                ws.send(`User ${username} joined room ${roomCode}`)
+                room.players.push(ws)
+                broadcast(room, `User ${username} joined room ${roomCode}`)
             } else if (action.type === 'messageReceived') {
-                ws.send(`${username}: ${action.payload}`)
+                broadcast(room, `${username}: ${action.payload}`)
             } else {
                 console.error(`Unknown message received: ${msg}`)
             }
+
+            console.log(activeRooms)
         })
     })
 

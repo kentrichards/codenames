@@ -1,4 +1,4 @@
-function generateRoomCode() {
+export function generateRoomCode() {
     const alphabet = [
         'A',
         'B',
@@ -36,4 +36,10 @@ function generateRoomCode() {
     )
 }
 
-export { generateRoomCode }
+export function getRoom(rooms, roomCode) {
+    for (let i = 0; i < rooms.length; i++) {
+        if (rooms[i].roomCode === roomCode) {
+            return activeRooms[i]
+        }
+    }
+}
