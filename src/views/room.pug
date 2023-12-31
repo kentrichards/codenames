@@ -1,7 +1,7 @@
 extends layout
 
 block content
-    h1 #{roomCode}
+    p roomCode=#{roomCode}; username=#{username}
     input(type="text" id="msg")
     button#send-msg Send message
     #received-msgs

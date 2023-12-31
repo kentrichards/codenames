@@ -1,7 +1,7 @@
 const usernameInput = /** @type {HTMLInputElement} */ (document.getElementById('username'))
 const createGameBtn = /** @type {HTMLButtonElement} */ (document.getElementById('create-game'))
-const roomCodeInput = /** @type {HTMLInputElement} */ (document.getElementById('room-code'))
-const joinGameBtn = /** @type {HTMLButtonElement} */ (document.getElementById('join-game'))
+// const roomCodeInput = /** @type {HTMLInputElement} */ (document.getElementById('room-code'))
+// const joinGameBtn = /** @type {HTMLButtonElement} */ (document.getElementById('join-game'))
 
 createGameBtn.addEventListener('click', (/** @type {MouseEvent} */ ev) => {
     ev.preventDefault()
@@ -12,9 +12,7 @@ createGameBtn.addEventListener('click', (/** @type {MouseEvent} */ ev) => {
         return
     }
 
-    document.cookie = `username=${encodeURIComponent(username)}; SameSite=Strict`
-
-    fetch('/createGame')
+    fetch(`/createGame?username=${encodeURIComponent(username)}`)
         .then(res => {
             if (!res.ok) {
                 throw new Error(`status=${res.status}`)
