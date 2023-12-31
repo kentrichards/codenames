@@ -1,16 +1,7 @@
 import express from 'express'
-import { generateRoomCode } from './room.js'
-import { getRoom } from './room.js'
+import { activeRooms, createRoom, getRoom, broadcast } from './room.js'
 
 const router = express.Router()
-
-const activeRooms = []
-
-function broadcast(room, msg) {
-    room.players.forEach(ws => {
-        ws.send(msg)
-    })
-}
 
 // eslint-disable-next-line no-unused-vars
 export default expressWsInstance => {
@@ -20,16 +11,10 @@ export default expressWsInstance => {
 
     router.get('/createGame', (req, res) => {
         const username = req.query.username
-        const newRoomCode = generateRoomCode()
-        const newRoom = {
-            roomCode: newRoomCode,
-            players: [],
-            gameState: {},
-        }
+        res.cookie('username', username, { sameSite: 'strict' })
+        const newRoom = createRoom()
         activeRooms.push(newRoom)
-        res.cookie('username', username)
-        res.cookie('SameSite', 'Strict')
-        res.redirect(`/${newRoomCode}`)
+        res.redirect(`/${newRoom.roomCode}`)
     })
 
     router.get('/:roomCode', (req, res) => {
@@ -40,7 +25,7 @@ export default expressWsInstance => {
 
     router.ws('/:roomCode', (ws, req) => {
         const roomCode = req.params.roomCode
-        const room = getRoom(activeRooms, roomCode)
+        const room = getRoom(roomCode)
         const username = req.cookies.username
 
         ws.on('message', (/** @type {String} */ msg) => {
