@@ -1,42 +1,33 @@
 import express from 'express'
-
-import { generateRoomCode } from './util.js'
-
-const activeRooms = []
+import { generateRoomCode } from './room.js'
 
 const router = express.Router()
 
-router.get('/', (req, res) => {
-    res.render('index')
-})
+// eslint-disable-next-line no-unused-vars
+export default expressWsInstance => {
+    router.get('/', (req, res) => {
+        res.render('index')
+    })
 
-router.get('/createGame', (req, res) => {
-    const newRoom = {
-        roomCode: generateRoomCode(),
-        players: [],
-        gameState: {},
-    }
+    router.get('/createGame', (req, res) => {
+        res.redirect(`/${generateRoomCode()}`)
+    })
 
-    activeRooms.push(newRoom)
+    router.get('/:roomCode', (req, res) => {
+        // const username = req.cookies.username
+        const roomCode = req.params.roomCode
 
-    res.redirect(`/${newRoom.roomCode}`)
-})
+        res.render('room', { roomCode })
+    })
 
-router.get('/:roomCode', (req, res) => {
-    const username = req.cookies.username
-    const roomCode = req.params.roomCode
+    router.ws('/:roomCode', (ws, req) => {
+        const roomCode = req.params.roomCode
 
-    // unsure about session tracking — how do we keep track of players?
-    // probably want more than just their name, an id too?
-    for (let room of activeRooms) {
-        if (room.roomCode === roomCode) {
-            if (room.players.includes(username)) break
-            room.players = [username, ...room.players]
-        }
-    }
+        ws.on('message', msg => {
+            ws.send(`Echo: ${msg}`)
+            console.log(`/${roomCode}: ${msg}`)
+        })
+    })
 
-    console.log(activeRooms)
-    res.send(`user ${username} joined room ${roomCode}`)
-})
-
-export default router
+    return router
+}

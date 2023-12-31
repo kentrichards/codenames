@@ -1,0 +1,8 @@
+extends layout
+
+block content
+    h1 #{roomCode}
+    input(type="text" id="msg")
+    button#send-msg Send message
+    #received-msgs
+    script(src="/js/room.js" defer)
