@@ -6,7 +6,15 @@ socket.addEventListener('open', () => {
 })
 
 socket.addEventListener('message', ev => {
-    receivedMsgsEl.innerText += ev.data + '\n'
+    const action = JSON.parse(ev.data)
+
+    if (action.type === 'redirect') {
+        window.location.href = action.payload
+    } else if (action.type === 'message') {
+        receivedMsgsEl.innerText += action.payload + '\n'
+    } else {
+        console.error(`Unknown message received: ${ev.data}`)
+    }
 })
 
 const msgInput = /** @type {HTMLInputElement} */ (document.getElementById('msg'))
