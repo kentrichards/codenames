@@ -49,7 +49,7 @@ joinGameBtn.addEventListener('click', (/** @type {MouseEvent}*/ ev) => {
         return
     }
 
-    fetch(`/joinRoom/${roomCode}/${username}`)
+    fetch(`/joinRoom/${roomCode}`)
         .then(res => {
             if (!res.ok) {
                 throw new Error(`${res.status} ${res.statusText}`)

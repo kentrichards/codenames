@@ -13,8 +13,8 @@ export function getRoom(/** @type {String} */ roomCode) {
 }
 
 export function broadcast(room, msg) {
-    room.players.forEach(ws => {
-        ws.send(msg)
+    room.players.forEach(player => {
+        player.send(JSON.stringify({ type: 'message', payload: msg }))
     })
 }
 
