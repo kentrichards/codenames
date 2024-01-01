@@ -56,6 +56,20 @@ export default expressWsInstance => {
                 console.error(`Unknown message received: ${msg}`)
             }
         })
+
+        ws.on('close', () => {
+            broadcast(room, `User ${username} left the room`)
+
+            const playerIndex = room.players.indexOf(ws)
+            if (playerIndex > -1) {
+                room.players.splice(playerIndex, 1)
+            }
+
+            const roomIndex = activeRooms.indexOf(room)
+            if (room.players.length < 1 && roomIndex > -1) {
+                activeRooms.splice(roomIndex, 1)
+            }
+        })
     })
 
     return router
