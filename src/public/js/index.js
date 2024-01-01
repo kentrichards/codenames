@@ -25,6 +25,10 @@ createGameBtn.addEventListener('click', (/** @type {MouseEvent} */ ev) => {
         })
 })
 
+roomCodeInput.addEventListener('input', () => {
+    roomCodeInput.value = roomCodeInput.value.toUpperCase()
+})
+
 joinGameBtn.addEventListener('click', (/** @type {MouseEvent}*/ ev) => {
     ev.preventDefault()
 
