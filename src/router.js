@@ -17,6 +17,15 @@ export default expressWsInstance => {
         res.redirect(`/${newRoom.roomCode}`)
     })
 
+    router.get('/joinRoom', (req, res) => {
+        const roomCode = req.query.roomCode
+        if (activeRooms.find(room => room.roomCode === roomCode)) {
+            res.redirect(`/${roomCode}`)
+        } else {
+            res.status(404)
+        }
+    })
+
     router.get('/:roomCode', (req, res) => {
         const roomCode = req.params.roomCode
         const username = req.cookies.username
