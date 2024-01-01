@@ -9,11 +9,7 @@ export function createRoom() {
 }
 
 export function getRoom(/** @type {String} */ roomCode) {
-    for (let i = 0; i < activeRooms.length; i++) {
-        if (activeRooms[i].roomCode === roomCode) {
-            return activeRooms[i]
-        }
-    }
+    return activeRooms.find(room => room.roomCode === roomCode)
 }
 
 export function broadcast(room, msg) {

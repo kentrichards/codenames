@@ -9,17 +9,17 @@ export default expressWsInstance => {
         res.render('index')
     })
 
-    router.get('/createGame', (req, res) => {
-        const username = req.query.username
+    router.get('/createGame/:username', (req, res) => {
+        const username = req.params.username
         res.cookie('username', username, { sameSite: 'strict' })
         const newRoom = createRoom()
         activeRooms.push(newRoom)
         res.redirect(`/${newRoom.roomCode}`)
     })
 
-    router.get('/joinRoom', (req, res) => {
-        const roomCode = req.query.roomCode
-        if (activeRooms.find(room => room.roomCode === roomCode)) {
+    router.get('/joinRoom/:roomCode', (req, res) => {
+        const roomCode = req.params.roomCode
+        if (getRoom(roomCode)) {
             res.redirect(`/${roomCode}`)
         } else {
             res.status(404)
@@ -53,8 +53,6 @@ export default expressWsInstance => {
             } else {
                 console.error(`Unknown message received: ${msg}`)
             }
-
-            console.log(activeRooms)
         })
     })
 
