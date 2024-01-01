@@ -17,19 +17,32 @@ export default expressWsInstance => {
         res.redirect(`/${newRoom.roomCode}`)
     })
 
-    router.get('/joinRoom/:roomCode', (req, res) => {
+    router.get('/joinRoom/:roomCode/:username', (req, res) => {
         const roomCode = req.params.roomCode
-        if (getRoom(roomCode)) {
-            res.redirect(`/${roomCode}`)
-        } else {
-            res.status(404)
+        if (!getRoom(roomCode)) {
+            res.sendStatus(404)
+            return
         }
+        const username = req.params.username
+        res.cookie('username', username, { sameSite: 'strict' })
+        res.redirect(`/${roomCode}`)
     })
 
     router.get('/:roomCode', (req, res) => {
         const roomCode = req.params.roomCode
+        if (!getRoom(roomCode)) {
+            res.sendStatus(404)
+            return
+        }
         const username = req.cookies.username
         res.render('room', { roomCode, username })
+
+        // TODO: Need to ensure user has a username
+        // E.g. if someone clicks a link their friend sent them,
+        // they will hit this endpoint where the code assumes they
+        // have already set a username for themselves. Players may
+        // need to be able to set names for themselves in room.pug
+        // for cases when players are not entering thru index.pug
     })
 
     router.ws('/:roomCode', (ws, req) => {
