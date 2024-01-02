@@ -17,9 +17,15 @@ socket.addEventListener('message', ev => {
     }
 })
 
+const leaveRoomBtn = /** @type {HTMLButtonElement} */ (document.getElementById('leave-room'))
 const msgInput = /** @type {HTMLInputElement} */ (document.getElementById('msg'))
 const sendMsgBtn = /** @type {HTMLButtonElement} */ (document.getElementById('send-msg'))
 const receivedMsgsEl = /** @type {HTMLDivElement} */ (document.getElementById('received-msgs'))
+
+leaveRoomBtn.addEventListener('click', (/** @type MouseEvent */ ev) => {
+    ev.preventDefault()
+    window.location.href = '/'
+})
 
 sendMsgBtn.addEventListener('click', (/** @type MouseEvent */ ev) => {
     ev.preventDefault()

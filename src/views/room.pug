@@ -2,6 +2,7 @@ extends layout
 
 block content
     p roomCode=#{roomCode}; username=#{username}
+    button#leave-room Leave room
     input(type="text" id="msg")
     button#send-msg Send message
     #received-msgs
