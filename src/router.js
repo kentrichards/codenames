@@ -1,8 +1,8 @@
 import express from 'express'
-import { activeRooms, createRoom, closeRoom, getRoom, broadcast } from './room.js'
+import { activeRooms, createRoom, closeRoom, getRoom, broadcast, redirectSocket, removePlayer } from './room.js'
 
 const router = express.Router()
-let roomTimeout = null
+let emptyRoomTimeout = null
 
 // eslint-disable-next-line no-unused-vars
 export default expressWsInstance => {
@@ -51,9 +51,8 @@ export default expressWsInstance => {
         const username = req.cookies.username
         const room = getRoom(roomCode)
 
-        if(!room) {
-            const redirect = { type: 'redirect', payload: '/' }
-            ws.send(JSON.stringify(redirect))
+        if (!room) {
+            redirectSocket(ws, '/')
             return
         }
 
@@ -68,8 +67,8 @@ export default expressWsInstance => {
             if (action.type === 'userConnected') {
                 room.players.push(ws)
 
-                if (roomTimeout != null) {
-                    clearTimeout(roomTimeout)
+                if (emptyRoomTimeout != null) {
+                    clearTimeout(emptyRoomTimeout)
                 }
 
                 broadcast(room, `User ${username} joined room ${roomCode}`)
@@ -82,15 +81,9 @@ export default expressWsInstance => {
 
         ws.on('close', () => {
             broadcast(room, `User ${username} left the room`)
-
-            const playerIndex = room.players.indexOf(ws)
-            if (playerIndex > -1) {
-                room.players.splice(playerIndex, 1)
-            }
-
-            const roomIndex = activeRooms.indexOf(room)
-            if (room.players.length < 1 && roomIndex > -1) {
-                roomTimeout = setInterval(closeRoom, 120000, roomIndex)
+            removePlayer(room, ws)
+            if (room.players.length < 1) {
+                emptyRoomTimeout = setInterval(closeRoom, 120000, room)
             }
         })
     })
