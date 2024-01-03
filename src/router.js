@@ -5,7 +5,7 @@ import {
     closeRoom,
     getRoom,
     broadcast,
-    redirectPlayer,
+    redirectSocket,
     removePlayer,
     idleTimeout,
 } from './room.js'
@@ -70,7 +70,7 @@ export default expressWsInstance => {
         const room = getRoom(roomCode)
 
         if (!room) {
-            redirectPlayer(ws, '/')
+            redirectSocket(ws, '/')
             return
         }
 
@@ -85,7 +85,14 @@ export default expressWsInstance => {
             idleTime.timer = 0
 
             if (action.type === 'userConnected') {
-                room.players.push(ws)
+                const newPlayer = {
+                    username: `${username}`,
+                    team: '',
+                    role: '',
+                    socket: ws
+                }
+
+                room.players.push(newPlayer)
 
                 if (emptyRoomTimeout != null) {
                     clearTimeout(emptyRoomTimeout)
