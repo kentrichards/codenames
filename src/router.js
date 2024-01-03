@@ -1,7 +1,8 @@
 import express from 'express'
-import { activeRooms, createRoom, getRoom, broadcast } from './room.js'
+import { activeRooms, createRoom, closeRoom, getRoom, broadcast } from './room.js'
 
 const router = express.Router()
+let roomTimeout = null
 
 // eslint-disable-next-line no-unused-vars
 export default expressWsInstance => {
@@ -20,6 +21,7 @@ export default expressWsInstance => {
     router.get('/joinRoom/:roomCode', (req, res) => {
         const roomCode = req.params.roomCode
         if (!getRoom(roomCode)) {
+            // TODO: redirect to homepage/room not found page
             res.sendStatus(404)
             return
         }
@@ -29,6 +31,7 @@ export default expressWsInstance => {
     router.get('/:roomCode', (req, res) => {
         const roomCode = req.params.roomCode
         if (!getRoom(roomCode)) {
+            // TODO: redirect to homepage/room not found page
             res.sendStatus(404)
             return
         }
@@ -45,8 +48,14 @@ export default expressWsInstance => {
 
     router.ws('/:roomCode', (ws, req) => {
         const roomCode = req.params.roomCode
-        const room = getRoom(roomCode)
         const username = req.cookies.username
+        const room = getRoom(roomCode)
+
+        if(!room) {
+            const redirect = { type: 'redirect', payload: '/' }
+            ws.send(JSON.stringify(redirect))
+            return
+        }
 
         ws.on('message', (/** @type {String} */ msg) => {
             const action = JSON.parse(msg)
@@ -58,6 +67,11 @@ export default expressWsInstance => {
 
             if (action.type === 'userConnected') {
                 room.players.push(ws)
+
+                if (roomTimeout != null) {
+                    clearTimeout(roomTimeout)
+                }
+
                 broadcast(room, `User ${username} joined room ${roomCode}`)
             } else if (action.type === 'messageReceived') {
                 broadcast(room, `${username}: ${action.payload}`)
@@ -76,7 +90,7 @@ export default expressWsInstance => {
 
             const roomIndex = activeRooms.indexOf(room)
             if (room.players.length < 1 && roomIndex > -1) {
-                activeRooms.splice(roomIndex, 1)
+                roomTimeout = setInterval(closeRoom, 120000, roomIndex)
             }
         })
     })
