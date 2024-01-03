@@ -11,7 +11,7 @@ export function createRoom() {
 export function closeRoom(room) {
     if (room.players.length > 0) {
         room.players.forEach(player => {
-            redirectPlayer(player, '/')
+            redirectSocket(player.socket, '/')
         })
     }
     const roomIndex = activeRooms.indexOf(room)
@@ -19,15 +19,19 @@ export function closeRoom(room) {
 }
 
 export function removePlayer(room, socket) {
-    const playerIndex = room.players.indexOf(socket)
-    room.players.splice(playerIndex, 1)
+    for (let i = 0; i < room.players.length; i++) {
+        if (room.players[i].socket == socket) {
+            room.players.splice(i, 1)
+            return
+        }
+    }
 }
 
 export function getRoom(/** @type {String} */ roomCode) {
     return activeRooms.find(room => room.roomCode === roomCode)
 }
 
-export function redirectPlayer(socket, path) {
+export function redirectSocket(socket, path) {
     const redirect = { type: 'redirect', payload: `${path}` }
     socket.send(JSON.stringify(redirect))
 }
@@ -41,7 +45,7 @@ export function idleTimeout(room, idleTime) {
 
 export function broadcast(room, msg) {
     room.players.forEach(player => {
-        player.send(JSON.stringify({ type: 'message', payload: msg }))
+        player.socket.send(JSON.stringify({ type: 'message', payload: msg }))
     })
 }
 
