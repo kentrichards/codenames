@@ -39,17 +39,3 @@ sendMsgBtn.addEventListener('click', (/** @type MouseEvent */ ev) => {
     }
     socket.send(JSON.stringify(action))
 })
-
-let idleTime = 0
-
-document.onmousemove = function () {idleTime = 0}
-document.onkeydown = function () {idleTime = 0}
-
-function sendTimeout () {
-    idleTime = idleTime + 1
-    if (idleTime > 9) {
-        window.location.href = '/'
-    }
-}
-
-setInterval(sendTimeout, 6000)

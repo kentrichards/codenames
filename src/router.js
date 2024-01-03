@@ -1,12 +1,27 @@
 import express from 'express'
-import { activeRooms, createRoom, closeRoom, getRoom, broadcast, redirectSocket, removePlayer } from './room.js'
+import {
+    activeRooms,
+    createRoom,
+    closeRoom,
+    getRoom,
+    broadcast,
+    redirectPlayer,
+    removePlayer,
+    idleTimeout,
+} from './room.js'
 
 const router = express.Router()
+
+const idleTime = { timer: 0 }
 let emptyRoomTimeout = null
+let idleTimer = null
 
 // eslint-disable-next-line no-unused-vars
 export default expressWsInstance => {
     router.get('/', (req, res) => {
+        if (idleTimer != null) {
+            clearInterval(idleTimer)
+        }
         res.render('index')
     })
 
@@ -15,6 +30,7 @@ export default expressWsInstance => {
         res.cookie('username', username, { sameSite: 'strict' })
         const newRoom = createRoom()
         activeRooms.push(newRoom)
+        idleTimer = setInterval(idleTimeout, 60000, newRoom, idleTime)
         res.redirect(`/${newRoom.roomCode}`)
     })
 
@@ -54,7 +70,7 @@ export default expressWsInstance => {
         const room = getRoom(roomCode)
 
         if (!room) {
-            redirectSocket(ws, '/')
+            redirectPlayer(ws, '/')
             return
         }
 
@@ -65,6 +81,8 @@ export default expressWsInstance => {
                 console.error(`Bad message received: ${msg}`)
                 return
             }
+
+            idleTime.timer = 0
 
             if (action.type === 'userConnected') {
                 room.players.push(ws)
