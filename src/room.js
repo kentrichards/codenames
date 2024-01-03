@@ -8,12 +8,23 @@ export function createRoom() {
     }
 }
 
-export function closeRoom(roomIndex) {
+export function closeRoom(room) {
+    const roomIndex = activeRooms.indexOf(room)
     activeRooms.splice(roomIndex, 1)
+}
+
+export function removePlayer(room, socket) {
+    const playerIndex = room.players.indexOf(socket)
+    room.players.splice(playerIndex, 1)
 }
 
 export function getRoom(/** @type {String} */ roomCode) {
     return activeRooms.find(room => room.roomCode === roomCode)
+}
+
+export function redirectSocket(socket, path) {
+    const redirect = { type: 'redirect', payload: `${path}` }
+    socket.send(JSON.stringify(redirect))
 }
 
 export function broadcast(room, msg) {
