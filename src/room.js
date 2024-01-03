@@ -8,6 +8,10 @@ export function createRoom() {
     }
 }
 
+export function closeRoom(roomIndex) {
+    activeRooms.splice(roomIndex, 1)
+}
+
 export function getRoom(/** @type {String} */ roomCode) {
     return activeRooms.find(room => room.roomCode === roomCode)
 }
