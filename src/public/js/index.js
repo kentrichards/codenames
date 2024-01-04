@@ -21,6 +21,12 @@ roomCodeInput.addEventListener('input', () => {
     roomCodeInput.value = roomCodeInput.value.toUpperCase()
 })
 
+roomCodeInput.addEventListener('keydown', (/** @type {KeyboardEvent} */ ev) => {
+    if (ev.key === 'Enter') {
+        joinGameBtn.click()
+    }
+})
+
 joinGameBtn.addEventListener('click', (/** @type {MouseEvent} */ ev) => {
     ev.preventDefault()
 
