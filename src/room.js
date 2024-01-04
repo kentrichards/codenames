@@ -23,6 +23,11 @@ export function removePlayer(room, socket) {
     }
 }
 
+/**
+ *
+ * @param {string} roomCode
+ * @returns {Room | undefined}
+ */
 export function getRoom(/** @type {String} */ roomCode) {
     return activeRooms.find(room => room.roomCode === roomCode)
 }
