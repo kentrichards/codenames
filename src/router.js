@@ -25,9 +25,7 @@ export default expressWsInstance => {
         res.render('index')
     })
 
-    router.get('/createGame/:username', (req, res) => {
-        const username = req.params.username
-        res.cookie('username', username, { sameSite: 'strict' })
+    router.get('/createGame', (req, res) => {
         const newRoom = createRoom()
         activeRooms.push(newRoom)
         idleTimer = setInterval(idleTimeout, 60000, newRoom, idleTime)
@@ -105,7 +103,7 @@ export default expressWsInstance => {
                 }
 
                 broadcast(room, `User ${username} joined room ${roomCode}`)
-            } else if (action.type === 'messageReceived') {
+            } else if (action.type === 'message') {
                 broadcast(room, `${username}: ${action.payload}`)
             } else {
                 console.error(`Unknown message received: ${msg}`)
