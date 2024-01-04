@@ -1,13 +1,5 @@
 import express from 'express'
-import {
-    activeRooms,
-    createRoom,
-    getRoom,
-    broadcast,
-    redirectSocket,
-    removePlayer,
-    idleTimeout,
-} from './room.js'
+import { activeRooms, createRoom, getRoom, broadcast, removePlayer, idleTimeout } from './room.js'
 
 const router = express.Router()
 
@@ -78,7 +70,6 @@ export default expressWsInstance => {
             } else {
                 console.error(`Unknown message received: ${msg}`)
             }
-
         })
 
         ws.on('close', () => {
