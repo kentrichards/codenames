@@ -4,12 +4,16 @@ export function createRoom() {
     return {
         roomCode: generateRoomCode(),
         players: [],
-        gameState: {},
+        gameState: {
+            idleTimer: null,
+            idleTime: 0
+        },
     }
 }
 
 export function closeRoom(room) {
     room.players.forEach(player => redirectSocket(player.socket, '/'))
+    clearInterval(room.gameState.idleTimer)
     const roomIndex = activeRooms.indexOf(room)
     activeRooms.splice(roomIndex, 1)
 }
@@ -32,9 +36,12 @@ export function redirectSocket(socket, path) {
     socket.send(JSON.stringify(redirect))
 }
 
-export function idleTimeout(room, idleTime) {
-    idleTime.timer += 1
-    if (idleTime.timer > 9) {
+export function idleTimeout(room) {
+    room.gameState.idleTime += 1
+
+    if (room.players.length < 1 && room.gameState.idleTime > 1) {
+        closeRoom(room)
+    } else if (room.gameState.idleTime > 9) {
         closeRoom(room)
     }
 }
