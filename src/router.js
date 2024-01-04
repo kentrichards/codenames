@@ -87,7 +87,7 @@ export default expressWsInstance => {
                     username: `${username}`,
                     team: '',
                     role: '',
-                    socket: ws
+                    socket: ws,
                 }
 
                 room.players.push(newPlayer)
