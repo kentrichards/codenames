@@ -6,7 +6,7 @@ export function createRoom() {
         players: [],
         gameState: {
             idleTimer: null,
-            idleTime: 0
+            idleTime: 0,
         },
     }
 }
