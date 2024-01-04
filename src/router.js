@@ -69,6 +69,8 @@ export default expressWsInstance => {
         const username = req.cookies.username
         const room = getRoom(roomCode)
 
+        // Is this necessary when we already check if the room exists in .get('/:roomCode')?
+        // Wondering if there is a race condition we need to worry about w.r.t timers closing rooms
         if (!room) {
             redirectSocket(ws, '/')
             return
@@ -77,6 +79,11 @@ export default expressWsInstance => {
         ws.on('message', (/** @type {String} */ msg) => {
             const action = JSON.parse(msg)
 
+            // This is not strictly necessary, the below if-else chain will catch this case without issue
+            // If !action.type, action.type === undefined, so we will be comparing undefined to strings below
+            // and will hit the else clause (which prints a similar error message)
+            // We only run into problems if we try to access a property on another, undefined, property
+            // E.g. accessing action.type.other without checking if action.type exists
             if (!action.type) {
                 console.error(`Bad message received: ${msg}`)
                 return
@@ -86,7 +93,7 @@ export default expressWsInstance => {
 
             if (action.type === 'userConnected') {
                 const newPlayer = {
-                    username: `${username}`,
+                    username,
                     team: '',
                     role: '',
                     socket: ws,
@@ -95,6 +102,7 @@ export default expressWsInstance => {
                 room.players.push(newPlayer)
 
                 if (emptyRoomTimeout != null) {
+                    // clearTimeout is a Node function — should this be clearInterval?
                     clearTimeout(emptyRoomTimeout)
                 }
 
