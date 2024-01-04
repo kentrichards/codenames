@@ -1,7 +1,15 @@
 extends layout
 
 block content
-    p roomCode=#{roomCode}; username=#{username}
+    if !username
+        dialog
+            label(for="username") Enter username
+            input(type="text" name="username" id="username" autofocus)
+            button(id="submit") Submit
+            a(href="/") Return to main menu
+        script(defer).
+            window.onload = () => document.querySelector('dialog').showModal()
+    p roomCode=#{roomCode}
     button#leave-room Leave room
     input(type="text" id="msg")
     button#send-msg Send message

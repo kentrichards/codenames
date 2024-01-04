@@ -25,24 +25,20 @@ export default expressWsInstance => {
         res.render('index')
     })
 
-    router.get('/createGame/:username', (req, res) => {
-        const username = req.params.username
-        res.cookie('username', username, { sameSite: 'strict' })
+    router.get('/createGame', (req, res) => {
         const newRoom = createRoom()
         activeRooms.push(newRoom)
         idleTimer = setInterval(idleTimeout, 60000, newRoom, idleTime)
         res.redirect(`/${newRoom.roomCode}`)
     })
 
-    router.get('/joinRoom/:roomCode/:username', (req, res) => {
+    router.get('/joinRoom/:roomCode', (req, res) => {
         const roomCode = req.params.roomCode
         if (!getRoom(roomCode)) {
             // TODO: redirect to homepage/room not found page
             res.sendStatus(404)
             return
         }
-        const username = req.params.username
-        res.cookie('username', username, { sameSite: 'strict' })
         res.redirect(`/${roomCode}`)
     })
 
@@ -107,7 +103,7 @@ export default expressWsInstance => {
                 }
 
                 broadcast(room, `User ${username} joined room ${roomCode}`)
-            } else if (action.type === 'messageReceived') {
+            } else if (action.type === 'message') {
                 broadcast(room, `${username}: ${action.payload}`)
             } else {
                 console.error(`Unknown message received: ${msg}`)
