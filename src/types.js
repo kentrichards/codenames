@@ -2,7 +2,7 @@
  * @typedef {Object} Room
  * @property {string} roomCode
  * @property {Player[]} players
- * @property {{}} gameState
+ * @property {GameState} gameState
  */
 
 /**
@@ -11,4 +11,10 @@
  * @property {string} team
  * @property {string} role
  * @property {import('ws')} socket
+ */
+
+/**
+ * @typedef {Object} GameState
+ * @property {NodeJS.Timeout | null} idleTimer
+ * @property {number} idleTime
  */

@@ -1,5 +1,8 @@
 export const activeRooms = []
 
+/**
+ * @returns {Room}
+ */
 export function createRoom() {
     return {
         roomCode: generateRoomCode(),
