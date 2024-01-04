@@ -59,6 +59,7 @@ const receivedMsgsEl = /** @type {HTMLDivElement} */ (document.getElementById('r
 
 leaveRoomBtn.addEventListener('click', (/** @type MouseEvent*/ ev) => {
     ev.preventDefault()
+    document.cookie = ''
     window.location.href = '/'
 })
 

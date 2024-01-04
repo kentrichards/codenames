@@ -10,5 +10,5 @@
  * @property {string} username
  * @property {string} team
  * @property {string} role
- * @property {import('ws')} ws
+ * @property {import('ws')} socket
  */
