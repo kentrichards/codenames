@@ -9,11 +9,7 @@ export function createRoom() {
 }
 
 export function closeRoom(room) {
-    if (room.players.length > 0) {
-        room.players.forEach(player => {
-            redirectSocket(player.socket, '/')
-        })
-    }
+    room.players.forEach(player => redirectSocket(player.socket, '/'))
     const roomIndex = activeRooms.indexOf(room)
     activeRooms.splice(roomIndex, 1)
 }
@@ -32,7 +28,7 @@ export function getRoom(/** @type {String} */ roomCode) {
 }
 
 export function redirectSocket(socket, path) {
-    const redirect = { type: 'redirect', payload: `${path}` }
+    const redirect = { type: 'redirect', payload: path }
     socket.send(JSON.stringify(redirect))
 }
 
