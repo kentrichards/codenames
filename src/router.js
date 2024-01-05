@@ -9,6 +9,37 @@ export default expressWsInstance => {
         res.render('index')
     })
 
+    router.get('/board', (req, res) => {
+        const agents = [
+            'ant',
+            'bee',
+            'dog',
+            'egg',
+            'frog',
+            'goat',
+            'hat',
+            'igloo',
+            'jam',
+            'kite',
+            'lion',
+            'mouse',
+            'nest',
+            'owl',
+            'pig',
+            'quail',
+            'rat',
+            'snake',
+            'turtle',
+            'unicorn',
+            'vase',
+            'wolf',
+            'x-ray',
+            'yak',
+            'zeppelin',
+        ]
+        res.render('board', { agents })
+    })
+
     router.get('/createGame', (req, res) => {
         const newRoom = createRoom()
         newRoom.gameState.idleTimer = setInterval(idleTimeout, 60000, newRoom)
