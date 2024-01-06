@@ -1,17 +1,19 @@
-export const activeRooms = []
+const activeRooms = []
 
 /**
- * @returns {Room}
+ * @returns {string} the roomCode of the newly created room
  */
 export function createRoom() {
-    return {
+    const newRoom = {
         roomCode: generateRoomCode(),
         players: [],
         gameState: {
-            idleTimer: null,
             idleTime: 0,
         },
     }
+    newRoom.gameState.idleTimer = setInterval(idleTimeout, 60000, newRoom)
+    activeRooms.push(newRoom)
+    return newRoom.roomCode
 }
 
 export function closeRoom(room) {
@@ -44,7 +46,13 @@ export function redirectSocket(socket, path) {
     socket.send(JSON.stringify(redirect))
 }
 
-export function idleTimeout(room) {
+export function broadcast(room, msg) {
+    room.players.forEach(player => {
+        player.socket.send(JSON.stringify({ type: 'message', payload: msg }))
+    })
+}
+
+function idleTimeout(room) {
     room.gameState.idleTime += 1
 
     if (room.players.length < 1 && room.gameState.idleTime > 1) {
@@ -52,12 +60,6 @@ export function idleTimeout(room) {
     } else if (room.gameState.idleTime > 9) {
         closeRoom(room)
     }
-}
-
-export function broadcast(room, msg) {
-    room.players.forEach(player => {
-        player.socket.send(JSON.stringify({ type: 'message', payload: msg }))
-    })
 }
 
 function generateRoomCode() {

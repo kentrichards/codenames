@@ -1,5 +1,5 @@
 import express from 'express'
-import { activeRooms, createRoom, getRoom, broadcast, removePlayer, idleTimeout } from './room.js'
+import { createRoom, getRoom, broadcast, removePlayer } from './room.js'
 import { drawAgents } from './game.js'
 
 const router = express.Router()
@@ -16,10 +16,8 @@ export default expressWsInstance => {
     })
 
     router.get('/createGame', (req, res) => {
-        const newRoom = createRoom()
-        newRoom.gameState.idleTimer = setInterval(idleTimeout, 60000, newRoom)
-        activeRooms.push(newRoom)
-        res.redirect(`/${newRoom.roomCode}`)
+        const roomCode = createRoom()
+        res.redirect(`/${roomCode}`)
     })
 
     router.get('/joinRoom/:roomCode', (req, res) => {
