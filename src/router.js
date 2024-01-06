@@ -23,7 +23,7 @@ export default expressWsInstance => {
     router.get('/joinRoom/:roomCode', (req, res) => {
         const roomCode = req.params.roomCode
         if (!getRoom(roomCode)) {
-            // TODO: redirect to homepage/room not found page
+            // TODO: Display error message to user
             res.sendStatus(404)
             return
         }
@@ -33,8 +33,7 @@ export default expressWsInstance => {
     router.get('/:roomCode', (req, res) => {
         const roomCode = req.params.roomCode
         if (!getRoom(roomCode)) {
-            // TODO: redirect to homepage/room not found page
-            res.sendStatus(404)
+            res.status(404).render('404', { path: req.path })
             return
         }
         const username = req.cookies.username

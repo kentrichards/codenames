@@ -20,7 +20,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 
 app.use(cookieParser())
 app.use(logger('dev'))
-app.use('/', router(expressWsInstance))
+app.use(router(expressWsInstance))
 
 const port = process.env.port || 3000
 app.listen(port, () => {
