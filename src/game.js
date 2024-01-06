@@ -8,6 +8,61 @@ const agents = {
     /** @type {string[]} */ undercover: [],
 }
 
+/**
+ * Draw 25 cards of the type given by gameMode
+ * @param {'default' | 'duet' | 'undercover'} gameMode
+ * @returns {Map<string, string>} the 25 card deck, in agent:role pairs
+ */
+export function getCards(gameMode = 'default') {
+    const roles = [
+        'red',
+        'red',
+        'red',
+        'red',
+        'red',
+        'red',
+        'red',
+        'red',
+        'red',
+        'blue',
+        'blue',
+        'blue',
+        'blue',
+        'blue',
+        'blue',
+        'blue',
+        'blue',
+        'neutral',
+        'neutral',
+        'neutral',
+        'neutral',
+        'neutral',
+        'neutral',
+        'neutral',
+        'assassin',
+    ]
+    const agents = drawAgents(gameMode)
+    shuffle(roles)
+    const cards = new Map()
+    agents.forEach((agent, i) => {
+        cards.set(agent, roles[i])
+    })
+    return cards
+}
+
+/**
+ * Draw 25 agents of the type given by gameMode
+ * @param {'default' | 'duet' | 'undercover'} gameMode
+ */
+function drawAgents(gameMode) {
+    if (agents[gameMode].length === 0) {
+        loadAgents()
+    }
+    shuffle(agents[gameMode])
+    const NUM_AGENTS_PER_DRAW = 25
+    return agents[gameMode].slice(0, NUM_AGENTS_PER_DRAW)
+}
+
 function loadAgents() {
     const __filename = fileURLToPath(import.meta.url)
     const __dirname = path.dirname(__filename)
@@ -26,26 +81,12 @@ function loadAgents() {
 }
 
 /**
- * Draw 25 agents of the type given by gameMode
- * @param {'default' | 'duet' | 'undercover'} gameMode
+ * Use the Fisher-Yates algorithm to shuffle arr in place
+ * @param {any[]} arr
  */
-export function drawAgents(gameMode = 'default') {
-    /**
-     * Use the Fisher-Yates algorithm to shuffle arr in place
-     * @param {any[]} arr
-     */
-    function shuffle(arr) {
-        for (let i = arr.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1))
-            ;[arr[i], arr[j]] = [arr[j], arr[i]]
-        }
+function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1))
+        ;[arr[i], arr[j]] = [arr[j], arr[i]]
     }
-
-    if (agents[gameMode].length === 0) {
-        loadAgents()
-    }
-
-    shuffle(agents[gameMode])
-    const NUM_AGENTS_PER_DRAW = 25
-    return agents[gameMode].slice(0, NUM_AGENTS_PER_DRAW)
 }

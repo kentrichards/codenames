@@ -1,6 +1,6 @@
 import express from 'express'
 import { createRoom, getRoom, broadcast, removePlayer } from './room.js'
-import { drawAgents } from './game.js'
+import { getCards } from './game.js'
 
 const router = express.Router()
 
@@ -11,8 +11,8 @@ export default expressWsInstance => {
     })
 
     router.get('/board', (req, res) => {
-        const agents = drawAgents()
-        res.render('board', { agents })
+        const cards = getCards()
+        res.render('board', { agents: [...cards.keys()] })
     })
 
     router.get('/createGame', (req, res) => {
