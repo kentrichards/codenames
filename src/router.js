@@ -1,5 +1,6 @@
 import express from 'express'
 import { activeRooms, createRoom, getRoom, broadcast, removePlayer, idleTimeout } from './room.js'
+import { drawAgents } from './game.js'
 
 const router = express.Router()
 
@@ -10,33 +11,7 @@ export default expressWsInstance => {
     })
 
     router.get('/board', (req, res) => {
-        const agents = [
-            'ant',
-            'bee',
-            'dog',
-            'egg',
-            'frog',
-            'goat',
-            'hat',
-            'igloo',
-            'jam',
-            'kite',
-            'lion',
-            'mouse',
-            'nest',
-            'owl',
-            'pig',
-            'quail',
-            'rat',
-            'snake',
-            'turtle',
-            'unicorn',
-            'vase',
-            'wolf',
-            'x-ray',
-            'yak',
-            'zeppelin',
-        ]
+        const agents = drawAgents()
         res.render('board', { agents })
     })
 
