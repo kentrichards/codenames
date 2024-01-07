@@ -72,7 +72,7 @@ function loadAgents() {
         const files = fs.readdirSync(dataDir)
         files.forEach(file => {
             const contents = fs.readFileSync(path.join(dataDir, file))
-            agents[file] = contents.toString().split('\n')
+            agents[file] = contents.toString().split(/\r?\n/)
         })
     } catch (err) {
         console.error('Error reading agent data:', err)
