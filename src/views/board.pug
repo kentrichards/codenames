@@ -1,8 +1,6 @@
-extends layout
+extends room
 
-block content
+block board
     #board
         each agent, idx in agents
-            button.agent(data-index=idx)= agent
-    link(rel="stylesheet", href="/css/board.css")
-    script(src="/js/board.js" defer)
+            button.card(data-index=idx)= agent

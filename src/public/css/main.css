@@ -1,22 +1,71 @@
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
+@layer base {
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+    
+    body {
+        margin: 0;
+        line-height: 1.5;
+        font-family: system-ui;
+        color: #333;
+        background: offwhite;
+    }
+    
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        line-height: 1.15;
+    }
 }
 
-body {
-    margin: 0;
-    line-height: 1.5;
-    font-family: system-ui;
-    color: #333;
-    background: offwhite;
-}
+@layer components {
+    #board {
+        width: 50%;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        grid-auto-rows: minmax(5rem, auto);
+        gap: 1rem;
+    }
+    
+    .card {
+        background: #fff;
+        border: 2px solid #999;
+        cursor: pointer;
+    }
+    
+    .card:hover {
+        background: #eee;
+    }
+    
+    .card:active {
+        background: #ddd;
+    }
+    
+    .card:focus-visible {
+        border: 2px solid #000;
+        outline: none;
+    }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    line-height: 1.15;
+    .card.red {
+        background: red;
+    }
+
+    .card.blue {
+        background: dodgerblue;
+    }
+
+    .card.neutral {
+        background: bisque;
+    }
+
+    .card.assassin {
+        background-color: black;
+        color: white;
+    }
 }

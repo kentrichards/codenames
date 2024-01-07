@@ -18,7 +18,10 @@ function openWebSocketConnection() {
         if (action.type === 'redirect') {
             window.location.href = action.payload
         } else if (action.type === 'message') {
-            receivedMsgsEl.innerText += action.payload + '\n'
+            console.log('message received', action.payload)
+        } else if (action.type === 'revealCard') {
+            const card = cardEls.find(card => card.innerText === action.payload.agent)
+            card.className += ` ${action.payload.role}`
         } else {
             console.error(`Unknown message received: ${ev.data}`)
         }
@@ -53,25 +56,39 @@ if (dialogEl && usernameInput && submitBtn) {
 }
 
 const leaveRoomBtn = /** @type {HTMLButtonElement} */ (document.getElementById('leave-room'))
-const msgInput = /** @type {HTMLInputElement} */ (document.getElementById('msg'))
-const sendMsgBtn = /** @type {HTMLButtonElement} */ (document.getElementById('send-msg'))
-const receivedMsgsEl = /** @type {HTMLDivElement} */ (document.getElementById('received-msgs'))
-
 leaveRoomBtn.addEventListener('click', (/** @type MouseEvent*/ ev) => {
     ev.preventDefault()
     document.cookie = 'username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Strict'
     window.location.href = '/'
 })
 
-sendMsgBtn.addEventListener('click', (/** @type MouseEvent*/ ev) => {
-    ev.preventDefault()
+const cardEls = /** @type {HTMLButtonElement[]} */ (Array.from(document.getElementsByClassName('card')))
+cardEls.forEach(agent => {
+    agent.addEventListener('click', ev => {
+        ev.preventDefault()
+        const action = {
+            type: 'cardClicked',
+            payload: agent.innerText,
+        }
+        socket.send(JSON.stringify(action))
+    })
+})
 
-    const msg = msgInput.value
-    if (!msg) return
+const boardEl = document.getElementById('board')
+boardEl.addEventListener('keydown', ev => {
+    const el = /** @type {HTMLButtonElement} */ (ev.target)
+    const idx = Number.parseInt(el.attributes.getNamedItem('data-index').value)
 
-    const action = {
-        type: 'message',
-        payload: msg,
+    const colShift = 1
+    const rowShift = 5
+
+    if (ev.key === 'ArrowUp' && idx > 4) {
+        cardEls[idx - rowShift].focus()
+    } else if (ev.key === 'ArrowDown' && idx < 20) {
+        cardEls[idx + rowShift].focus()
+    } else if (ev.key === 'ArrowLeft' && idx !== 0 && idx !== 5 && idx !== 10 && idx !== 15 && idx !== 20) {
+        cardEls[idx - colShift].focus()
+    } else if (ev.key === 'ArrowRight' && idx !== 4 && idx !== 9 && idx !== 14 && idx !== 19 && idx !== 24) {
+        cardEls[idx + colShift].focus()
     }
-    socket.send(JSON.stringify(action))
 })

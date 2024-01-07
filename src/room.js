@@ -1,3 +1,5 @@
+import { getCards } from './game.js'
+
 const activeRooms = []
 
 /**
@@ -8,6 +10,7 @@ export function createRoom() {
         roomCode: generateRoomCode(),
         players: [],
         gameState: {
+            cards: getCards(),
             idleTime: 0,
         },
     }
@@ -46,9 +49,9 @@ export function redirectSocket(socket, path) {
     socket.send(JSON.stringify(redirect))
 }
 
-export function broadcast(room, msg) {
+export function broadcast(room, type, payload) {
     room.players.forEach(player => {
-        player.socket.send(JSON.stringify({ type: 'message', payload: msg }))
+        player.socket.send(JSON.stringify({ type, payload }))
     })
 }
 

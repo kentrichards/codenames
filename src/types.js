@@ -16,5 +16,6 @@
 /**
  * @typedef {Object} GameState
  * @property {NodeJS.Timeout | null} idleTimer
+ * @property {Map<string, string>} cards
  * @property {number} idleTime
  */

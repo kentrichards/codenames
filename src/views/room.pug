@@ -9,9 +9,10 @@ block content
             a(href="/") Return to main menu
         script(defer).
             window.onload = () => document.querySelector('dialog').showModal()
-    p roomCode=#{roomCode}
+    
+    h1 Room #{roomCode}
     button#leave-room Leave room
-    input(type="text" id="msg")
-    button#send-msg Send message
-    #received-msgs
+
+    block board
+    
     script(src="/js/room.js" defer)
