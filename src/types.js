@@ -16,6 +16,17 @@
 /**
  * @typedef {Object} GameState
  * @property {NodeJS.Timeout | null} idleTimer
- * @property {Map<string, string>} cards
+ * @property {Card[]} cards
  * @property {number} idleTime
+ */
+
+/**
+ * @typedef {Object} Card
+ * @property {string} agent
+ * @property {Role} role
+ * @property {boolean} revealed
+ */
+
+/**
+ * @typedef {'red' | 'blue' | 'neutral' | 'assassin'} Role
  */

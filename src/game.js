@@ -11,7 +11,7 @@ const agents = {
 /**
  * Draw 25 cards of the type given by gameMode
  * @param {'default' | 'duet' | 'undercover'} gameMode
- * @returns {Map<string, string>} the 25 card deck, in agent:role pairs
+ * @returns {Card[]} the 25 card deck, in agent:role pairs
  */
 export function getCards(gameMode = 'default') {
     const roles = [
@@ -43,9 +43,9 @@ export function getCards(gameMode = 'default') {
     ]
     const agents = drawAgents(gameMode)
     shuffle(roles)
-    const cards = new Map()
+    const cards = []
     agents.forEach((agent, i) => {
-        cards.set(agent, roles[i])
+        cards.push({ agent, role: roles[i], revealed: false })
     })
     return cards
 }

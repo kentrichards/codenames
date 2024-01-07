@@ -1,6 +1,5 @@
 import express from 'express'
 import { createRoom, getRoom, broadcast, removePlayer } from './room.js'
-import { getCards } from './game.js'
 
 const router = express.Router()
 
@@ -8,11 +7,6 @@ const router = express.Router()
 export default expressWsInstance => {
     router.get('/', (req, res) => {
         res.render('index')
-    })
-
-    router.get('/board', (req, res) => {
-        const cards = getCards()
-        res.render('board', { agents: [...cards.keys()] })
     })
 
     router.get('/createGame', (req, res) => {
@@ -38,8 +32,8 @@ export default expressWsInstance => {
             return
         }
         const username = req.cookies.username
-        const agents = [...room.gameState.cards.keys()]
-        res.render('board', { roomCode, username, agents })
+        const cards = room.gameState.cards
+        res.render('room', { roomCode, username, cards })
 
         // TODO: Need to ensure user has a username
         // E.g. if someone clicks a link their friend sent them,
@@ -71,10 +65,9 @@ export default expressWsInstance => {
 
                 broadcast(room, 'message', `User ${username} joined room ${roomCode}`)
             } else if (action.type === 'cardClicked') {
-                broadcast(room, 'revealCard', {
-                    agent: action.payload,
-                    role: room.gameState.cards.get(action.payload),
-                })
+                const card = room.gameState.cards.find(card => card.agent === action.payload)
+                card.revealed = true
+                broadcast(room, 'revealCard', { agent: card.agent, role: card.role })
             } else {
                 console.error(`Unknown message received: ${msg}`)
             }

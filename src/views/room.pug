@@ -13,6 +13,8 @@ block content
     h1 Room #{roomCode}
     button#leave-room Leave room
 
-    block board
+    #board
+        each card, idx in cards
+            button.card(class=card.revealed ? card.role : '' data-index=idx)= card.agent
     
     script(src="/js/room.js" defer)
