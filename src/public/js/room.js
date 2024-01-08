@@ -17,6 +17,8 @@ function openWebSocketConnection() {
 
         if (action.type === 'redirect') {
             window.location.href = action.payload
+        } else if (action.type === 'playerJoin' && lobbyDialogEl) {
+            addNewPlayer(action.payload)
         } else if (action.type === 'startGame' && lobbyDialogEl) {
             lobbyDialogEl.close()
         } else if (action.type === 'message') {
@@ -62,6 +64,7 @@ if (usernameDialogEl && usernameInput && submitBtn) {
 
 const lobbyDialogEl = /** @type {HTMLDialogElement} */ (document.getElementById('lobby'))
 const startGameBtn = /** @type {HTMLButtonElement} */ (document.getElementById('start-game'))
+const players = /** @type {HTMLDivElement} */ (document.getElementById('players'))
 if (lobbyDialogEl) {
     /* Prevent the 'Esc' key from closing the dialog */
     lobbyDialogEl.addEventListener('cancel', ev => ev.preventDefault())
@@ -73,6 +76,13 @@ if (lobbyDialogEl) {
         lobbyDialogEl.close()
     })
 }
+
+const leaveLobbyBtn = /** @type {HTMLButtonElement} */ (document.getElementById('leave-lobby'))
+leaveLobbyBtn.addEventListener('click', (/** @type MouseEvent*/ ev) => {
+    ev.preventDefault()
+    document.cookie = 'username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Strict'
+    window.location.href = '/'
+})
 
 const leaveRoomBtn = /** @type {HTMLButtonElement} */ (document.getElementById('leave-room'))
 leaveRoomBtn.addEventListener('click', (/** @type MouseEvent*/ ev) => {
@@ -111,3 +121,30 @@ boardEl.addEventListener('keydown', ev => {
         cardEls[idx + colShift].focus()
     }
 })
+
+// I hate this but I'm leaving it for now
+function addNewPlayer(newPlayer) {
+    const playerBox = document.createElement('div')
+    playerBox.setAttribute('class', 'player')
+    const playerName = document.createElement('h4')
+    playerName.innerText += newPlayer.username
+    playerBox.appendChild(playerName)
+    const roleRadio = document.createElement('div')
+    roleRadio.setAttribute('class', 'radioInput')
+    roleRadio.innerHTML = "<input type='radio' id='spymaster' name='role' value='spymaster'>\
+                        <label for='spymaster'>SpyMaster</label>\
+                        <input type='radio' id='operative' name='role' value='operative'>\
+                        <label for='operative'>Operative</label>"
+
+    const teamRadio = document.createElement('div')
+    teamRadio.setAttribute('class', 'radioInput')
+    teamRadio.innerHTML = "<input type='radio' id='red' name='team' value='red'>\
+    <label for='red'>Red</label>\
+    <input type='radio' id='blue' name='team' value='blue'>\
+    <label for='blue'>Blue</label>"
+
+    playerBox.appendChild(roleRadio)
+    playerBox.appendChild(teamRadio)
+
+    players.appendChild(playerBox)
+}

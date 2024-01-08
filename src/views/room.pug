@@ -13,9 +13,9 @@ block content
     if !inProgress
         dialog#lobby
             h2 Lobby #{roomCode}
-            #players Players list/customization go here
+            #players
             button(id="start-game") Start game
-            a(href="/") Leave lobby
+            button#leave-lobby(href="/") Leave lobby
         if username
             script(defer).
                 window.onload = () => document.getElementById('lobby').showModal()

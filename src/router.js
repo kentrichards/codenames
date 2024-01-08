@@ -65,6 +65,7 @@ export default expressWsInstance => {
                 room.players.push(newPlayer)
 
                 broadcast(room, 'message', `User ${username} joined room ${roomCode}`)
+                broadcast(room, 'playerJoin', newPlayer)
             } else if (action.type === 'cardClicked') {
                 const card = room.gameState.cards.find(card => card.agent === action.payload)
                 card.revealed = true
