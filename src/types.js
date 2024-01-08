@@ -15,6 +15,7 @@
 
 /**
  * @typedef {Object} GameState
+ * @property {Boolean} inProgress
  * @property {NodeJS.Timeout | null} idleTimer
  * @property {Card[]} cards
  * @property {number} idleTime

@@ -33,7 +33,8 @@ export default expressWsInstance => {
         }
         const username = req.cookies.username
         const cards = room.gameState.cards
-        res.render('room', { roomCode, username, cards })
+        const inProgress = room.gameState.inProgress
+        res.render('room', { roomCode, username, cards, inProgress })
 
         // TODO: Need to ensure user has a username
         // E.g. if someone clicks a link their friend sent them,
@@ -68,6 +69,9 @@ export default expressWsInstance => {
                 const card = room.gameState.cards.find(card => card.agent === action.payload)
                 card.revealed = true
                 broadcast(room, 'revealCard', { agent: card.agent, role: card.role })
+            } else if (action.type === 'startGame') {
+                room.gameState.inProgress = true
+                broadcast(room, 'startGame', null)
             } else {
                 console.error(`Unknown message received: ${msg}`)
             }

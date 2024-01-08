@@ -17,6 +17,8 @@ function openWebSocketConnection() {
 
         if (action.type === 'redirect') {
             window.location.href = action.payload
+        } else if (action.type === 'startGame' && lobbyDialogEl) {
+            lobbyDialogEl.close()
         } else if (action.type === 'message') {
             console.log('message received', action.payload)
         } else if (action.type === 'revealCard') {
@@ -28,13 +30,13 @@ function openWebSocketConnection() {
     })
 }
 
-const dialogEl = /** @type {HTMLDialogElement} */ (document.querySelector('dialog'))
+const usernameDialogEl = /** @type {HTMLDialogElement} */ (document.getElementById('usernameCheck'))
 const usernameInput = /** @type {HTMLInputElement} */ (document.getElementById('username'))
 const submitBtn = /** @type {HTMLButtonElement} */ (document.getElementById('submit'))
 
-if (dialogEl && usernameInput && submitBtn) {
+if (usernameDialogEl && usernameInput && submitBtn) {
     /* Prevent the 'Esc' key from closing the dialog */
-    dialogEl.addEventListener('cancel', ev => ev.preventDefault())
+    usernameDialogEl.addEventListener('cancel', ev => ev.preventDefault())
 
     submitBtn.addEventListener('click', (/** @type {MouseEvent} */ ev) => {
         ev.preventDefault()
@@ -46,13 +48,30 @@ if (dialogEl && usernameInput && submitBtn) {
         }
 
         document.cookie = `username=${username}; SameSite=Strict`
-        dialogEl.close()
+        usernameDialogEl.close()
+        if (lobbyDialogEl) {
+            lobbyDialogEl.show()
+        }
         openWebSocketConnection()
     })
 } else {
     // If these elements don't exist, the username dialog must not have been sent by the
     // server, which means a username cookie already exists from a previous session
     openWebSocketConnection()
+}
+
+const lobbyDialogEl = /** @type {HTMLDialogElement} */ (document.getElementById('lobby'))
+const startGameBtn = /** @type {HTMLButtonElement} */ (document.getElementById('start-game'))
+if (lobbyDialogEl) {
+    /* Prevent the 'Esc' key from closing the dialog */
+    lobbyDialogEl.addEventListener('cancel', ev => ev.preventDefault())
+
+    startGameBtn.addEventListener('click', (/** @type {MouseEvent} */ ev) => {
+        ev.preventDefault()
+        const action = { type: 'startGame' }
+        socket.send(JSON.stringify(action))
+        lobbyDialogEl.close()
+    })
 }
 
 const leaveRoomBtn = /** @type {HTMLButtonElement} */ (document.getElementById('leave-room'))

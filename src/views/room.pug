@@ -2,14 +2,24 @@ extends layout
 
 block content
     if !username
-        dialog
+        dialog#usernameCheck
             label(for="username") Enter username
             input(type="text" name="username" id="username" autofocus)
             button(id="submit") Submit
             a(href="/") Return to main menu
         script(defer).
-            window.onload = () => document.querySelector('dialog').showModal()
-    
+            window.onload = () => document.getElementById('usernameCheck').showModal()
+
+    if !inProgress
+        dialog#lobby
+            h2 Lobby #{roomCode}
+            #players Players list/customization go here
+            button(id="start-game") Start game
+            a(href="/") Leave lobby
+        if username
+            script(defer).
+                window.onload = () => document.getElementById('lobby').showModal()
+
     h1 Room #{roomCode}
     button#leave-room Leave room
 

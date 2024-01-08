@@ -10,6 +10,7 @@ export function createRoom() {
         roomCode: generateRoomCode(),
         players: [],
         gameState: {
+            inProgress: false,
             cards: getCards(),
             idleTime: 0,
         },
