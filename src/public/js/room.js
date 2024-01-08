@@ -50,7 +50,7 @@ if (usernameDialogEl && usernameInput && submitBtn) {
         document.cookie = `username=${username}; SameSite=Strict`
         usernameDialogEl.close()
         if (lobbyDialogEl) {
-            lobbyDialogEl.show()
+            lobbyDialogEl.showModal()
         }
         openWebSocketConnection()
     })
