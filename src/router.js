@@ -33,8 +33,9 @@ export default expressWsInstance => {
         }
         const username = req.cookies.username
         const cards = room.gameState.cards
+        const players = room.players
         const inProgress = room.gameState.inProgress
-        res.render('room', { roomCode, username, cards, inProgress })
+        res.render('room', { roomCode, username, cards, inProgress, players })
 
         // TODO: Need to ensure user has a username
         // E.g. if someone clicks a link their friend sent them,

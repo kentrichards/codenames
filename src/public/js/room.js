@@ -64,7 +64,8 @@ if (usernameDialogEl && usernameInput && submitBtn) {
 
 const lobbyDialogEl = /** @type {HTMLDialogElement} */ (document.getElementById('lobby'))
 const startGameBtn = /** @type {HTMLButtonElement} */ (document.getElementById('start-game'))
-const players = /** @type {HTMLDivElement} */ (document.getElementById('players'))
+const playersDiv = /** @type {HTMLDivElement} */ (document.getElementById('players'))
+const playersList = /** @type {HTMLDivElement[]} */ (Array.from(document.getElementsByClassName('player')))
 if (lobbyDialogEl) {
     /* Prevent the 'Esc' key from closing the dialog */
     lobbyDialogEl.addEventListener('cancel', ev => ev.preventDefault())
@@ -124,27 +125,25 @@ boardEl.addEventListener('keydown', ev => {
 
 // I hate this but I'm leaving it for now
 function addNewPlayer(newPlayer) {
+    const playerId = playersList.length
     const playerBox = document.createElement('div')
-    playerBox.setAttribute('class', 'player')
+    playerBox.setAttribute('class', `player`)
+    playerBox.setAttribute('player-index', `${playerId}`)
+    
     const playerName = document.createElement('h4')
     playerName.innerText += newPlayer.username
     playerBox.appendChild(playerName)
-    const roleRadio = document.createElement('div')
-    roleRadio.setAttribute('class', 'radioInput')
-    roleRadio.innerHTML = "<input type='radio' id='spymaster' name='role' value='spymaster'>\
-                        <label for='spymaster'>SpyMaster</label>\
-                        <input type='radio' id='operative' name='role' value='operative'>\
-                        <label for='operative'>Operative</label>"
 
-    const teamRadio = document.createElement('div')
-    teamRadio.setAttribute('class', 'radioInput')
-    teamRadio.innerHTML = "<input type='radio' id='red' name='team' value='red'>\
-    <label for='red'>Red</label>\
-    <input type='radio' id='blue' name='team' value='blue'>\
-    <label for='blue'>Blue</label>"
+    addPlayerOption(playerBox, 'role', 'spymaster', playerId)
+    addPlayerOption(playerBox, 'role', 'operative', playerId)
+    addPlayerOption(playerBox, 'team', 'red', playerId)
+    addPlayerOption(playerBox, 'team', 'blue', playerId)
 
-    playerBox.appendChild(roleRadio)
-    playerBox.appendChild(teamRadio)
+    playersDiv.appendChild(playerBox)
+}
 
-    players.appendChild(playerBox)
+function addPlayerOption(parent, type, value, playerIndex) {
+    const html = `<input type='radio' id='${value}' name='${type}-${playerIndex}' value='${value}'>\
+                  <label for='${value}'>${value}</label>`
+    parent.innerHTML += html
 }
