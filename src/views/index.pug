@@ -3,7 +3,14 @@ extends layout
 block content
     fieldset
         legend Codenames
-        button#create-game Create game
+        form#mode-select(action="/createGame") Game Mode: 
+            input(type="radio" name="mode" id="default" value="default") 
+            label(for="default") Default
+            input(type="radio" name="mode" id="duet" value="duet")
+            label(for="duet") Duet
+            input(type="radio" name="mode" id="undercover" value="undercover")
+            label(for="undercover") Undercover
+            button#create-game(type='submit') Create game
         p OR
         label(for="room-code") Room code
         input(type="text" name="room-code" id="room-code" maxlength="4")
