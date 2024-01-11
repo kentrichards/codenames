@@ -17,9 +17,17 @@ function openWebSocketConnection() {
 
         if (action.type === 'redirect') {
             window.location.href = action.payload
-        } else if (action.type === 'playerJoin' && lobbyDialogEl) {
-            addNewPlayer(action.payload)
-        } else if (action.type === 'startGame' && lobbyDialogEl) {
+        } else if (action.type === 'playerJoin') {
+            if (lobbyDialogEl) {
+                addNewPlayer(action.payload.player)
+            }
+            console.log(`${action.payload.msg}`)
+        } else if (action.type === 'playerLeave') {
+            if (lobbyDialogEl) {
+                removePlayer(action.payload.playerId)
+            }
+            console.log(`${action.payload.msg}`)
+        } else if (action.type === 'startGame') {
             lobbyDialogEl.close()
         } else if (action.type === 'message') {
             console.log('message received', action.payload)
@@ -64,6 +72,7 @@ if (usernameDialogEl && usernameInput && submitBtn) {
 
 const lobbyDialogEl = /** @type {HTMLDialogElement} */ (document.getElementById('lobby'))
 const startGameBtn = /** @type {HTMLButtonElement} */ (document.getElementById('start-game'))
+const leaveLobbyBtn = /** @type {HTMLButtonElement} */ (document.getElementById('leave-lobby'))
 const playersDiv = /** @type {HTMLDivElement} */ (document.getElementById('players'))
 const playersList = /** @type {HTMLDivElement[]} */ (Array.from(document.getElementsByClassName('player')))
 if (lobbyDialogEl) {
@@ -76,14 +85,13 @@ if (lobbyDialogEl) {
         socket.send(JSON.stringify(action))
         lobbyDialogEl.close()
     })
-}
 
-const leaveLobbyBtn = /** @type {HTMLButtonElement} */ (document.getElementById('leave-lobby'))
-leaveLobbyBtn.addEventListener('click', (/** @type MouseEvent*/ ev) => {
-    ev.preventDefault()
-    document.cookie = 'username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Strict'
-    window.location.href = '/'
-})
+    leaveLobbyBtn.addEventListener('click', (/** @type MouseEvent*/ ev) => {
+        ev.preventDefault()
+        document.cookie = 'username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Strict'
+        window.location.href = '/'
+    })
+}
 
 const leaveRoomBtn = /** @type {HTMLButtonElement} */ (document.getElementById('leave-room'))
 leaveRoomBtn.addEventListener('click', (/** @type MouseEvent*/ ev) => {
@@ -127,9 +135,9 @@ boardEl.addEventListener('keydown', ev => {
 function addNewPlayer(newPlayer) {
     const playerId = playersList.length
     const playerBox = document.createElement('div')
-    playerBox.setAttribute('class', `player`)
-    playerBox.setAttribute('player-index', `${playerId}`)
-    
+    playerBox.setAttribute('class', 'player')
+    playerBox.setAttribute('id', `player-${playerId}`)
+
     const playerName = document.createElement('h4')
     playerName.innerText += newPlayer.username
     playerBox.appendChild(playerName)
@@ -146,4 +154,9 @@ function addPlayerOption(parent, type, value, playerIndex) {
     const html = `<input type='radio' id='${value}' name='${type}-${playerIndex}' value='${value}'>\
                   <label for='${value}'>${value}</label>`
     parent.innerHTML += html
+}
+
+function removePlayer(playerId) {
+    const player = document.getElementById(`player-${playerId}`)
+    player.parentNode.removeChild(player)
 }

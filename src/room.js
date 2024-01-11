@@ -27,6 +27,16 @@ export function closeRoom(room) {
     activeRooms.splice(roomIndex, 1)
 }
 
+export function getPlayerIndex(room, socket) {
+    for (let i = 0; i < room.players.length; i++) {
+        if (room.players[i].socket == socket) {
+            return i
+        }
+    }
+
+    return -1
+}
+
 export function removePlayer(room, socket) {
     for (let i = 0; i < room.players.length; i++) {
         if (room.players[i].socket == socket) {

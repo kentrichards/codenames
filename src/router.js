@@ -1,5 +1,5 @@
 import express from 'express'
-import { createRoom, getRoom, broadcast, removePlayer } from './room.js'
+import { createRoom, getRoom, broadcast, removePlayer, getPlayerIndex } from './room.js'
 
 const router = express.Router()
 
@@ -65,8 +65,11 @@ export default expressWsInstance => {
 
                 room.players.push(newPlayer)
 
-                broadcast(room, 'message', `User ${username} joined room ${roomCode}`)
-                broadcast(room, 'playerJoin', newPlayer)
+
+                broadcast(room, 'playerJoin', {
+                    player: newPlayer,
+                    msg: `User ${username} joined room ${roomCode}`,
+                })
             } else if (action.type === 'cardClicked') {
                 const card = room.gameState.cards.find(card => card.agent === action.payload)
                 card.revealed = true
@@ -81,7 +84,10 @@ export default expressWsInstance => {
 
         ws.on('close', () => {
             room.gameState.idleTime = 0
-            broadcast(room, 'message', `User ${username} left the room`)
+            broadcast(room, 'playerLeave', { 
+                playerId: getPlayerIndex(room, ws), 
+                msg: `User ${username} left the room`,
+            })
             removePlayer(room, ws)
         })
     })
