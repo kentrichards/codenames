@@ -35,13 +35,6 @@ export default expressWsInstance => {
         const username = req.cookies.username
         const cards = room.gameState.cards
         res.render('room', { roomCode, username, cards })
-
-        // TODO: Need to ensure user has a username
-        // E.g. if someone clicks a link their friend sent them,
-        // they will hit this endpoint where the code assumes they
-        // have already set a username for themselves. Players may
-        // need to be able to set names for themselves in room.pug
-        // for cases when players are not entering thru index.pug
     })
 
     router.ws('/:roomCode', (ws, req) => {

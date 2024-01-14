@@ -5,13 +5,13 @@ const activeRooms = []
 /**
  * @returns {string} the roomCode of the newly created room
  */
-export function createRoom(mode) {
+export function createRoom(gameMode) {
     const newRoom = {
         roomCode: generateRoomCode(),
         players: [],
         gameState: {
-            inProgress: false,
-            cards: getCards(mode),
+            gameMode,
+            cards: getCards(gameMode),
             idleTime: 0,
         },
     }
@@ -29,7 +29,7 @@ export function closeRoom(room) {
 
 export function removePlayer(room, socket) {
     for (let i = 0; i < room.players.length; i++) {
-        if (room.players[i].socket == socket) {
+        if (room.players[i].socket === socket) {
             room.players.splice(i, 1)
             return
         }

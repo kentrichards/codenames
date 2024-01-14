@@ -16,6 +16,7 @@
 /**
  * @typedef {Object} GameState
  * @property {NodeJS.Timeout | null} idleTimer
+ * @property {GameMode} gameMode
  * @property {Card[]} cards
  * @property {number} idleTime
  */
@@ -29,4 +30,8 @@
 
 /**
  * @typedef {'red' | 'blue' | 'neutral' | 'assassin'} Role
+ */
+
+/**
+ * @typedef {'default' | 'duet' | 'undercover'} GameMode
  */

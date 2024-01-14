@@ -4,49 +4,81 @@
     *::after {
         box-sizing: border-box;
     }
-    
+
     body {
         margin: 0;
-        line-height: 1.5;
         font-family: system-ui;
         color: #333;
         background: offwhite;
     }
-    
+
+    p {
+        margin: 0;
+        line-height: 1.5;
+    }
+
     h1,
     h2,
     h3,
     h4,
     h5,
     h6 {
+        margin: 0;
         line-height: 1.15;
     }
 }
 
 @layer components {
+    .banner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 1rem;
+        width: 100%;
+        height: 3rem;
+    }
+
+    #copy-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.25rem;
+        padding: 0;
+        line-height: 0;
+        cursor: pointer;
+    }
+
+    .room {
+        display: flex;
+        flex-direction: row;
+    }
+
     #board {
         width: 50%;
-        margin: 0 auto;
         display: grid;
         grid-template-columns: repeat(5, 1fr);
         grid-auto-rows: minmax(5rem, auto);
         gap: 1rem;
     }
-    
+
+    .panel {
+        width: 25%;
+    }
+
     .card {
         background: #fff;
         border: 2px solid #999;
         cursor: pointer;
     }
-    
+
     .card:hover {
         background: #eee;
     }
-    
+
     .card:active {
         background: #ddd;
     }
-    
+
     .card:focus-visible {
         border: 2px solid #000;
         outline: none;
@@ -54,18 +86,24 @@
 
     .card.red {
         background: red;
+        border-color: red;
+        color: white;
     }
 
     .card.blue {
         background: dodgerblue;
+        border-color: dodgerblue;
+        color: white;
     }
 
     .card.neutral {
         background: bisque;
+        border-color: bisque;
     }
 
     .card.assassin {
-        background-color: black;
+        background: black;
+        border-color: black;
         color: white;
     }
 }

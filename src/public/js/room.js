@@ -62,6 +62,36 @@ leaveRoomBtn.addEventListener('click', (/** @type MouseEvent*/ ev) => {
     window.location.href = '/'
 })
 
+let linkCopiedTimeout
+let linkRecentlyCopied = false
+const copyLinkBtn = /** @type {HTMLButtonElement} */ (document.getElementById('copy-link'))
+const copyLinkBtnWidth = copyLinkBtn.offsetWidth
+const copyLinkBtnHeight = copyLinkBtn.offsetHeight
+const copyLinkBtnContent = copyLinkBtn.innerHTML
+copyLinkBtn.addEventListener('click', (/** @type MouseEvent */ ev) => {
+    ev.preventDefault()
+    const inviteLink = window.location.href
+
+    navigator.clipboard
+        .writeText(inviteLink)
+        .then(() => {
+            if (!linkRecentlyCopied) {
+                copyLinkBtn.innerHTML = 'Copied!'
+                copyLinkBtn.style.width = `${copyLinkBtnWidth}px`
+                copyLinkBtn.style.height = `${copyLinkBtnHeight}px`
+                linkRecentlyCopied = true
+            } else {
+                clearTimeout(linkCopiedTimeout)
+            }
+
+            linkCopiedTimeout = setTimeout(() => {
+                copyLinkBtn.innerHTML = copyLinkBtnContent
+                linkRecentlyCopied = false
+            }, 3000)
+        })
+        .catch(() => console.error('Failed to copy invite link:', inviteLink))
+})
+
 const cardEls = /** @type {HTMLButtonElement[]} */ (Array.from(document.getElementsByClassName('card')))
 cardEls.forEach(agent => {
     agent.addEventListener('click', ev => {
