@@ -1,5 +1,6 @@
 import express from 'express'
 import { createRoom, getRoom, broadcast, removePlayer, addPlayer } from './room.js'
+import { getCards } from './game.js'
 
 const router = express.Router()
 
@@ -61,6 +62,15 @@ export default expressWsInstance => {
                 const card = room.gameState.cards.find(card => card.agent === action.payload)
                 card.revealed = true
                 broadcast(room, 'revealCard', { agent: card.agent, cardType: card.cardType })
+            } else if (action.type === 'newGame') {
+                room.gameState.cards = getCards(room.gameState.gameMode)
+                req.app.render('boardTemplate', { cards: room.gameState.cards }, (err, html) => {
+                    if (err) {
+                        console.error('Error rendering "board" template:', err)
+                        return
+                    }
+                    broadcast(room, 'newGame', html)
+                })
             } else {
                 console.error(`Unknown message received: ${msg}`)
             }

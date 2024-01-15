@@ -53,16 +53,19 @@
         flex-direction: row;
     }
 
-    #board {
+    .main-panel {
         width: 50%;
+    }
+
+    .side-panel {
+        width: 25%;
+    }
+
+    #board {
         display: grid;
         grid-template-columns: repeat(5, 1fr);
         grid-auto-rows: minmax(5rem, auto);
         gap: 1rem;
-    }
-
-    .panel {
-        width: 25%;
     }
 
     .card {

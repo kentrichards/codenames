@@ -25,6 +25,10 @@ function openWebSocketConnection() {
             card.className += ` ${action.payload.cardType}`
         } else if (action.type === 'userConnected' || action.type === 'userDisconnected') {
             teamsEl.innerHTML = action.payload
+        } else if (action.type === 'newGame') {
+            boardEl.innerHTML = action.payload
+            cardEls = /** @type {HTMLButtonElement[]} */ (Array.from(document.getElementsByClassName('card')))
+            attachCardListeners()
         } else {
             console.error(`Unknown message received: ${ev.data}`)
         }
@@ -97,17 +101,20 @@ copyLinkBtn.addEventListener('click', (/** @type MouseEvent */ ev) => {
         .catch(() => console.error('Failed to copy invite link:', inviteLink))
 })
 
-const cardEls = /** @type {HTMLButtonElement[]} */ (Array.from(document.getElementsByClassName('card')))
-cardEls.forEach(agent => {
-    agent.addEventListener('click', ev => {
-        ev.preventDefault()
-        const action = {
-            type: 'cardClicked',
-            payload: agent.innerText,
-        }
-        socket.send(JSON.stringify(action))
+let cardEls = /** @type {HTMLButtonElement[]} */ (Array.from(document.getElementsByClassName('card')))
+function attachCardListeners() {
+    cardEls.forEach(agent => {
+        agent.addEventListener('click', ev => {
+            ev.preventDefault()
+            const action = {
+                type: 'cardClicked',
+                payload: agent.innerText,
+            }
+            socket.send(JSON.stringify(action))
+        })
     })
-})
+}
+attachCardListeners()
 
 const boardEl = document.getElementById('board')
 boardEl.addEventListener('keydown', ev => {
@@ -126,4 +133,11 @@ boardEl.addEventListener('keydown', ev => {
     } else if (ev.key === 'ArrowRight' && idx !== 4 && idx !== 9 && idx !== 14 && idx !== 19 && idx !== 24) {
         cardEls[idx + colShift].focus()
     }
+})
+
+const newGameBtn = /** @type {HTMLButtonElement} */ (document.getElementById('new-game'))
+newGameBtn.addEventListener('click', (/** @type {MouseEvent} */ ev) => {
+    ev.preventDefault()
+    const action = { type: 'newGame' }
+    socket.send(JSON.stringify(action))
 })

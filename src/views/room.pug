@@ -21,14 +21,13 @@ block content
         button#leave-room Leave room
 
     .room
-        .panel
+        .side-panel
             #teams
                 +players(players)
-
-        #board
-            each card, idx in cards
-                button.card(class=card.revealed ? card.cardType : '' data-index=idx)= card.agent
-
-        .panel
+        .main-panel
+            #board
+                +board(cards)
+            button#new-game New Game
+        .side-panel
     
     script(src="/js/room.js" defer)
