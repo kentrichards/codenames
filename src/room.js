@@ -27,6 +27,21 @@ export function closeRoom(room) {
     activeRooms.splice(roomIndex, 1)
 }
 
+/**
+ *
+ * @param {Room} room
+ * @param {string} username
+ * @param {import('ws')} socket
+ */
+export function addPlayer(room, username, socket) {
+    room.players.push({
+        username,
+        team: teamWithLessPlayers(room.players),
+        role: 'guesser',
+        socket,
+    })
+}
+
 export function removePlayer(room, socket) {
     for (let i = 0; i < room.players.length; i++) {
         if (room.players[i].socket === socket) {
@@ -102,4 +117,19 @@ function generateRoomCode() {
         alphabet[Math.floor(Math.random() * alphabet.length)] +
         alphabet[Math.floor(Math.random() * alphabet.length)]
     )
+}
+
+/**
+ * Determines which team has fewer players, defaulting to 'red' when even
+ * @param {Player[]} players
+ * @returns {Team} the team with the fewest players
+ */
+function teamWithLessPlayers(players) {
+    let numRed = 0
+    let numBlue = 0
+    players.forEach(player => {
+        if (player.team === 'red') numRed++
+        else numBlue++
+    })
+    return numRed > numBlue ? 'blue' : 'red'
 }

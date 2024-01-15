@@ -18,15 +18,20 @@ function openWebSocketConnection() {
         if (action.type === 'redirect') {
             window.location.href = action.payload
         } else if (action.type === 'message') {
+            // TODO: Remove eventually
             console.log('message received', action.payload)
         } else if (action.type === 'revealCard') {
             const card = cardEls.find(card => card.innerText === action.payload.agent)
-            card.className += ` ${action.payload.role}`
+            card.className += ` ${action.payload.cardType}`
+        } else if (action.type === 'userConnected' || action.type === 'userDisconnected') {
+            teamsEl.innerHTML = action.payload
         } else {
             console.error(`Unknown message received: ${ev.data}`)
         }
     })
 }
+
+const teamsEl = /** @type {HTMLDivElement} */ (document.getElementById('teams'))
 
 const dialogEl = /** @type {HTMLDialogElement} */ (document.querySelector('dialog'))
 const usernameInput = /** @type {HTMLInputElement} */ (document.getElementById('username'))

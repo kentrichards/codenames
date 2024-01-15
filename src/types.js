@@ -8,8 +8,8 @@
 /**
  * @typedef {Object} Player
  * @property {string} username
- * @property {string} team
- * @property {string} role
+ * @property {Team} team
+ * @property {Role} role
  * @property {import('ws')} socket
  */
 
@@ -24,12 +24,21 @@
 /**
  * @typedef {Object} Card
  * @property {string} agent
- * @property {Role} role
+ * @property {CardType} cardType
  * @property {boolean} revealed
  */
 
 /**
- * @typedef {'red' | 'blue' | 'neutral' | 'assassin'} Role
+ * @typedef {'red' | 'blue'} Team
+ */
+
+/**
+ * TODO: Come up with better name than 'guesser'
+ * @typedef {'guesser' | 'spymaster'} Role
+ */
+
+/**
+ * @typedef {'red' | 'blue' | 'neutral' | 'assassin'} CardType
  */
 
 /**
