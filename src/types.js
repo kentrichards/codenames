@@ -19,6 +19,7 @@
  * @property {GameMode} gameMode
  * @property {Card[]} cards
  * @property {number} idleTime
+ * @property {Team} turn
  */
 
 /**

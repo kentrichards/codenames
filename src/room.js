@@ -13,6 +13,7 @@ export function createRoom(gameMode) {
             gameMode,
             cards: getCards(gameMode),
             idleTime: 0,
+            turn: 'red',
         },
     }
     newRoom.gameState.idleTimer = setInterval(idleTimeout, 60000, newRoom)

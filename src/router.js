@@ -34,9 +34,10 @@ export default expressWsInstance => {
             return
         }
         const username = req.cookies.username
-        const players = room.players
         const cards = room.gameState.cards
-        res.render('room', { roomCode, username, cards, players })
+        const players = room.players
+        const turn = room.gameState.turn
+        res.render('room', { roomCode, username, cards, players, turn })
     })
 
     router.ws('/:roomCode', (ws, req) => {
@@ -59,6 +60,9 @@ export default expressWsInstance => {
                     broadcast(room, 'userConnected', html)
                 })
             } else if (action.type === 'cardClicked') {
+                const player = room.players.find(p => p.socket === ws)
+                if (player.team !== room.gameState.turn) return
+
                 const card = room.gameState.cards.find(card => card.agent === action.payload)
                 card.revealed = true
                 broadcast(room, 'revealCard', { agent: card.agent, cardType: card.cardType })
@@ -71,6 +75,11 @@ export default expressWsInstance => {
                     }
                     broadcast(room, 'newGame', html)
                 })
+            } else if (action.type === 'endTurn') {
+                const player = room.players.find(p => p.socket === ws)
+                if (player.team !== room.gameState.turn) return
+                room.gameState.turn = room.gameState.turn === 'red' ? 'blue' : 'red'
+                broadcast(room, 'turnChange', room.gameState.turn)
             } else {
                 console.error(`Unknown message received: ${msg}`)
             }

@@ -25,6 +25,12 @@ block content
             #teams
                 +players(players)
         .main-panel
+            #turn
+                if turn === 'red'
+                    p Red Turn
+                else
+                    p Blue Turn
+                button#end-turn End Turn
             #board
                 +board(cards)
             button#new-game New Game

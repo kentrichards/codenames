@@ -29,12 +29,21 @@ function openWebSocketConnection() {
             boardEl.innerHTML = action.payload
             cardEls = /** @type {HTMLButtonElement[]} */ (Array.from(document.getElementsByClassName('card')))
             attachCardListeners()
+        } else if (action.type === 'turnChange') {
+            let msg
+            if (action.payload === 'red') {
+                msg = 'Red Turn'
+            } else {
+                msg = 'Blue Turn'
+            }
+            turnEl.innerText = msg
         } else {
             console.error(`Unknown message received: ${ev.data}`)
         }
     })
 }
 
+const turnEl = /** @type {HTMLParagraphElement} */ (document.querySelector('#turn > p'))
 const teamsEl = /** @type {HTMLDivElement} */ (document.getElementById('teams'))
 
 const dialogEl = /** @type {HTMLDialogElement} */ (document.querySelector('dialog'))
@@ -139,5 +148,12 @@ const newGameBtn = /** @type {HTMLButtonElement} */ (document.getElementById('ne
 newGameBtn.addEventListener('click', (/** @type {MouseEvent} */ ev) => {
     ev.preventDefault()
     const action = { type: 'newGame' }
+    socket.send(JSON.stringify(action))
+})
+
+const endTurnBtn = /** @type {HTMLButtonElement} */ (document.getElementById('end-turn'))
+endTurnBtn.addEventListener('click', (/** @type {MouseEvent} */ ev) => {
+    ev.preventDefault()
+    const action = { type: 'endTurn' }
     socket.send(JSON.stringify(action))
 })
