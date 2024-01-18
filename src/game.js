@@ -14,7 +14,7 @@ const agents = {
  * @returns {Card[]} the 25 card deck, in agent:role pairs
  */
 export function getCards(gameMode = 'default') {
-    const roles = [
+    const types = /** @type {CardType[]} */ ([
         'red',
         'red',
         'red',
@@ -40,12 +40,12 @@ export function getCards(gameMode = 'default') {
         'neutral',
         'neutral',
         'assassin',
-    ]
+    ])
     const agents = drawAgents(gameMode)
-    shuffle(roles)
-    const cards = []
+    shuffle(types)
+    const cards = /** @type {Card[]} */ ([])
     agents.forEach((agent, i) => {
-        cards.push({ agent, role: roles[i], revealed: false })
+        cards.push({ agent, cardType: types[i], revealed: false })
     })
     return cards
 }

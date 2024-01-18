@@ -18,15 +18,24 @@ function openWebSocketConnection() {
         if (action.type === 'redirect') {
             window.location.href = action.payload
         } else if (action.type === 'message') {
+            // TODO: Remove eventually
             console.log('message received', action.payload)
         } else if (action.type === 'revealCard') {
             const card = cardEls.find(card => card.innerText === action.payload.agent)
-            card.className += ` ${action.payload.role}`
+            card.className += ` ${action.payload.cardType}`
+        } else if (action.type === 'userConnected' || action.type === 'userDisconnected') {
+            teamsEl.innerHTML = action.payload
+        } else if (action.type === 'newGame') {
+            boardEl.innerHTML = action.payload
+            cardEls = /** @type {HTMLButtonElement[]} */ (Array.from(document.getElementsByClassName('card')))
+            attachCardListeners()
         } else {
             console.error(`Unknown message received: ${ev.data}`)
         }
     })
 }
+
+const teamsEl = /** @type {HTMLDivElement} */ (document.getElementById('teams'))
 
 const dialogEl = /** @type {HTMLDialogElement} */ (document.querySelector('dialog'))
 const usernameInput = /** @type {HTMLInputElement} */ (document.getElementById('username'))
@@ -62,17 +71,50 @@ leaveRoomBtn.addEventListener('click', (/** @type MouseEvent*/ ev) => {
     window.location.href = '/'
 })
 
-const cardEls = /** @type {HTMLButtonElement[]} */ (Array.from(document.getElementsByClassName('card')))
-cardEls.forEach(agent => {
-    agent.addEventListener('click', ev => {
-        ev.preventDefault()
-        const action = {
-            type: 'cardClicked',
-            payload: agent.innerText,
-        }
-        socket.send(JSON.stringify(action))
-    })
+let linkCopiedTimeout
+let linkRecentlyCopied = false
+const copyLinkBtn = /** @type {HTMLButtonElement} */ (document.getElementById('copy-link'))
+const copyLinkBtnWidth = copyLinkBtn.offsetWidth
+const copyLinkBtnHeight = copyLinkBtn.offsetHeight
+const copyLinkBtnContent = copyLinkBtn.innerHTML
+copyLinkBtn.addEventListener('click', (/** @type MouseEvent */ ev) => {
+    ev.preventDefault()
+    const inviteLink = window.location.href
+
+    navigator.clipboard
+        .writeText(inviteLink)
+        .then(() => {
+            if (!linkRecentlyCopied) {
+                copyLinkBtn.innerHTML = 'Copied!'
+                copyLinkBtn.style.width = `${copyLinkBtnWidth}px`
+                copyLinkBtn.style.height = `${copyLinkBtnHeight}px`
+                linkRecentlyCopied = true
+            } else {
+                clearTimeout(linkCopiedTimeout)
+            }
+
+            linkCopiedTimeout = setTimeout(() => {
+                copyLinkBtn.innerHTML = copyLinkBtnContent
+                linkRecentlyCopied = false
+            }, 3000)
+        })
+        .catch(() => console.error('Failed to copy invite link:', inviteLink))
 })
+
+let cardEls = /** @type {HTMLButtonElement[]} */ (Array.from(document.getElementsByClassName('card')))
+function attachCardListeners() {
+    cardEls.forEach(agent => {
+        agent.addEventListener('click', ev => {
+            ev.preventDefault()
+            const action = {
+                type: 'cardClicked',
+                payload: agent.innerText,
+            }
+            socket.send(JSON.stringify(action))
+        })
+    })
+}
+attachCardListeners()
 
 const boardEl = document.getElementById('board')
 boardEl.addEventListener('keydown', ev => {
@@ -91,4 +133,11 @@ boardEl.addEventListener('keydown', ev => {
     } else if (ev.key === 'ArrowRight' && idx !== 4 && idx !== 9 && idx !== 14 && idx !== 19 && idx !== 24) {
         cardEls[idx + colShift].focus()
     }
+})
+
+const newGameBtn = /** @type {HTMLButtonElement} */ (document.getElementById('new-game'))
+newGameBtn.addEventListener('click', (/** @type {MouseEvent} */ ev) => {
+    ev.preventDefault()
+    const action = { type: 'newGame' }
+    socket.send(JSON.stringify(action))
 })

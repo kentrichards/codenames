@@ -1,5 +1,6 @@
 import express from 'express'
-import { createRoom, getRoom, broadcast, removePlayer } from './room.js'
+import { createRoom, getRoom, broadcast, removePlayer, addPlayer } from './room.js'
+import { getCards } from './game.js'
 
 const router = express.Router()
 
@@ -33,15 +34,9 @@ export default expressWsInstance => {
             return
         }
         const username = req.cookies.username
+        const players = room.players
         const cards = room.gameState.cards
-        res.render('room', { roomCode, username, cards })
-
-        // TODO: Need to ensure user has a username
-        // E.g. if someone clicks a link their friend sent them,
-        // they will hit this endpoint where the code assumes they
-        // have already set a username for themselves. Players may
-        // need to be able to set names for themselves in room.pug
-        // for cases when players are not entering thru index.pug
+        res.render('room', { roomCode, username, cards, players })
     })
 
     router.ws('/:roomCode', (ws, req) => {
@@ -55,20 +50,27 @@ export default expressWsInstance => {
             room.gameState.idleTime = 0
 
             if (action.type === 'userConnected') {
-                const newPlayer = {
-                    username,
-                    team: '',
-                    role: '',
-                    socket: ws,
-                }
-
-                room.players.push(newPlayer)
-
-                broadcast(room, 'message', `User ${username} joined room ${roomCode}`)
+                addPlayer(room, username, ws)
+                req.app.render('playersTemplate', { players: room.players }, (err, html) => {
+                    if (err) {
+                        console.error('Error rendering "players" template:', err)
+                        return
+                    }
+                    broadcast(room, 'userConnected', html)
+                })
             } else if (action.type === 'cardClicked') {
                 const card = room.gameState.cards.find(card => card.agent === action.payload)
                 card.revealed = true
-                broadcast(room, 'revealCard', { agent: card.agent, role: card.role })
+                broadcast(room, 'revealCard', { agent: card.agent, cardType: card.cardType })
+            } else if (action.type === 'newGame') {
+                room.gameState.cards = getCards(room.gameState.gameMode)
+                req.app.render('boardTemplate', { cards: room.gameState.cards }, (err, html) => {
+                    if (err) {
+                        console.error('Error rendering "board" template:', err)
+                        return
+                    }
+                    broadcast(room, 'newGame', html)
+                })
             } else {
                 console.error(`Unknown message received: ${msg}`)
             }
@@ -76,8 +78,14 @@ export default expressWsInstance => {
 
         ws.on('close', () => {
             room.gameState.idleTime = 0
-            broadcast(room, 'message', `User ${username} left the room`)
             removePlayer(room, ws)
+            req.app.render('playersTemplate', { players: room.players }, (err, html) => {
+                if (err) {
+                    console.error('Error rendering "players" template:', err)
+                    return
+                }
+                broadcast(room, 'userDisconnected', html)
+            })
         })
     })
 
