@@ -45,3 +45,9 @@
 /**
  * @typedef {'default' | 'duet' | 'undercover'} GameMode
  */
+
+/**
+ * @typedef {Object} Action
+ * @property {string} type
+ * @property {any} payload
+ */

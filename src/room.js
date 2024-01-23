@@ -1,6 +1,71 @@
+import path from 'path'
+import { fileURLToPath } from 'url'
+import { renderFile } from 'pug'
 import { getCards } from './game.js'
 
 const activeRooms = []
+
+/**
+ *
+ * @param {import('ws')} ws
+ * @param {Room} room
+ * @param {string} username
+ * @param {Action} action
+ * @returns {Action | undefined}
+ */
+export function applyAction(room, ws, username, action) {
+    let html, card
+    switch (action.type) {
+        case 'newGame':
+            room.gameState.cards = getCards(room.gameState.gameMode)
+            html = renderTemplate('boardTemplate', { cards: room.gameState.cards })
+            return { type: 'newGame', payload: html }
+
+        case 'userConnected':
+            addPlayer(room, username, ws)
+            html = renderTemplate('playersTemplate', { players: room.players })
+            return { type: 'userConnected', payload: html }
+
+        case 'cardClicked':
+            if (!isPlayersTurn(room, ws)) return
+            card = room.gameState.cards.find(card => card.agent === action.payload)
+            card.revealed = true
+            return { type: 'revealCard', payload: { agent: card.agent, cardType: card.cardType } }
+
+        case 'endTurn':
+            if (!isPlayersTurn(room, ws)) return
+            room.gameState.turn = room.gameState.turn === 'red' ? 'blue' : 'red'
+            return { type: 'turnChange', payload: room.gameState.turn }
+
+        default:
+            console.error(`Unknown message received: ${action}`)
+            return undefined
+    }
+}
+
+/**
+ * @param {Room} room the current room, which we use to determine which team's turn it is
+ * @param {import('ws')} ws the WebSocket that initiated the action
+ * @returns true when it is the player's turn, false otherwise
+ */
+function isPlayersTurn(room, ws) {
+    const player = room.players.find(p => p.socket === ws)
+    return player.team === room.gameState.turn
+}
+
+/**
+ * Renders the file `templateName`, using the given `locals` object, to an html string
+ * @param {string} templateName the name of the template file, excluding the file extension
+ * @param {Object} locals a Pug locals object
+ * @returns the html string, which can be sent to the client
+ */
+export function renderTemplate(templateName, locals) {
+    const __filename = fileURLToPath(import.meta.url)
+    const __dirname = path.dirname(__filename)
+    const viewsDir = path.join(__dirname, 'views')
+    const filePath = path.join(viewsDir, `${templateName}.pug`)
+    return renderFile(filePath, locals)
+}
 
 /**
  * @returns {string} the roomCode of the newly created room
