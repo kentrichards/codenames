@@ -190,7 +190,7 @@ export function addPlayer(room, username, socket) {
     room.players.push({
         username,
         team: teamWithLessPlayers(room.players),
-        role: 'guesser',
+        role: 'operative',
         socket,
     })
 }

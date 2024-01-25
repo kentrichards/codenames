@@ -37,8 +37,7 @@
  */
 
 /**
- * TODO: Come up with better name than 'guesser'
- * @typedef {'guesser' | 'spymaster'} Role
+ * @typedef {'operative' | 'spymaster'} Role
  */
 
 /**
