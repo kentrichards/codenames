@@ -33,10 +33,9 @@ export default expressWsInstance => {
             return
         }
         const username = req.cookies.username
-        const cards = room.gameState.cards
         const players = room.players
-        const turn = room.gameState.turn
-        res.render('room', { roomCode, username, cards, players, turn })
+        const gameState = room.gameState
+        res.render('room', { roomCode, username, players, gameState })
     })
 
     router.ws('/:roomCode', (ws, req) => {

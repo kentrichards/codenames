@@ -14,12 +14,24 @@ const activeRooms = []
  * @returns {Action | undefined}
  */
 export function applyAction(room, ws, username, action) {
-    let html, card
+    let html, card, team, msg
     switch (action.type) {
         case 'newGame':
+            room.gameState.redScore = 9
+            room.gameState.blueScore = 8
+            room.gameState.turn = 'red'
+            room.gameState.state = 'playing'
             room.gameState.cards = getCards(room.gameState.gameMode)
             html = renderTemplate('boardTemplate', { cards: room.gameState.cards })
-            return { type: 'newGame', payload: html }
+            return {
+                type: 'newGame',
+                payload: {
+                    newBoard: html,
+                    redScore: room.gameState.redScore,
+                    blueScore: room.gameState.blueScore,
+                    turnMsg: room.gameState.turn === 'red' ? "Red's Turn" : "Blue's Turn",
+                },
+            }
 
         case 'userConnected':
             addPlayer(room, username, ws)
@@ -28,14 +40,86 @@ export function applyAction(room, ws, username, action) {
 
         case 'cardClicked':
             if (!isPlayersTurn(room, ws)) return
+            if (room.gameState.state === 'gameOver') return
+            team = room.players.find(player => player.username === username).team
             card = room.gameState.cards.find(card => card.agent === action.payload)
             card.revealed = true
-            return { type: 'revealCard', payload: { agent: card.agent, cardType: card.cardType } }
 
-        case 'endTurn':
+            if (card.cardType === 'assassin') {
+                room.gameState.state = 'gameOver'
+                return {
+                    type: 'gameOver',
+                    payload: {
+                        agent: card.agent,
+                        cardType: card.cardType,
+                        winner: room.gameState.turn === 'red' ? 'blue' : 'red',
+                        winnerMsg: room.gameState.turn === 'red' ? 'Blue Team Wins!' : 'Red Team Wins!',
+                    },
+                }
+            }
+
+            if (card.cardType === 'red') {
+                room.gameState.redScore--
+            } else if (card.cardType === 'blue') {
+                room.gameState.blueScore--
+            }
+
+            if (room.gameState.redScore === 0) {
+                room.gameState.state = 'gameOver'
+                return {
+                    type: 'gameOver',
+                    payload: {
+                        agent: card.agent,
+                        cardType: card.cardType,
+                        winnerMsg: 'Red Team Wins!',
+                        redScore: room.gameState.redScore,
+                        blueScore: room.gameState.blueScore,
+                    },
+                }
+            } else if (room.gameState.blueScore === 0) {
+                room.gameState.state = 'gameOver'
+                return {
+                    type: 'gameOver',
+                    payload: {
+                        agent: card.agent,
+                        cardType: card.cardType,
+                        winnerMsg: 'Blue Team Wins!',
+                        redScore: room.gameState.redScore,
+                        blueScore: room.gameState.blueScore,
+                    },
+                }
+            }
+
+            if (team !== card.cardType) {
+                room.gameState.turn = room.gameState.turn === 'red' ? 'blue' : 'red'
+                return {
+                    type: 'endTurnForced',
+                    payload: {
+                        agent: card.agent,
+                        cardType: card.cardType,
+                        redScore: room.gameState.redScore,
+                        blueScore: room.gameState.blueScore,
+                        newTurnMsg: team === 'red' ? "Blue's Turn" : "Red's Turn",
+                    },
+                }
+            }
+
+            return {
+                type: 'revealCard',
+                payload: {
+                    agent: card.agent,
+                    cardType: card.cardType,
+                    redScore: room.gameState.redScore,
+                    blueScore: room.gameState.blueScore,
+                },
+            }
+
+        case 'endTurnClicked':
             if (!isPlayersTurn(room, ws)) return
+            if (room.gameState.state === 'gameOver') return
             room.gameState.turn = room.gameState.turn === 'red' ? 'blue' : 'red'
-            return { type: 'turnChange', payload: room.gameState.turn }
+            msg = room.gameState.turn === 'red' ? "Red's Turn" : "Blue's Turn"
+            return { type: 'endTurnClicked', payload: msg }
 
         default:
             console.error(`Unknown message received: ${action}`)
@@ -79,6 +163,9 @@ export function createRoom(gameMode) {
             cards: getCards(gameMode),
             idleTime: 0,
             turn: 'red',
+            state: 'playing',
+            redScore: 9,
+            blueScore: 8,
         },
     }
     newRoom.gameState.idleTimer = setInterval(idleTimeout, 60000, newRoom)
@@ -131,6 +218,12 @@ export function redirectSocket(socket, path) {
     socket.send(JSON.stringify(redirect))
 }
 
+/**
+ *
+ * @param {Room} room
+ * @param {string} type
+ * @param {any} payload
+ */
 export function broadcast(room, type, payload) {
     room.players.forEach(player => {
         player.socket.send(JSON.stringify({ type, payload }))

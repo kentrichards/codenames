@@ -12,7 +12,7 @@ block content
             window.onload = () => document.querySelector('dialog').showModal()
 
     .banner
-        button#copy-link(title="Copy link")
+        button#copy-link(title="Copy link for room " + roomCode)
             svg(width="1.5rem" height="1.5rem" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg")
                 path(d="M362.308-260.001q-30.308 0-51.307-21-21-21-21-51.308v-455.382q0-30.308 21-51.308 20.999-21 51.307-21h335.383q30.307 0 51.307 21 21 21 21 51.308v455.382q0 30.308-21 51.308t-51.307 21H362.308Zm0-59.999h335.383q4.615 0 8.462-3.846 3.846-3.847 3.846-8.463v-455.382q0-4.616-3.846-8.463-3.847-3.846-8.462-3.846H362.308q-4.616 0-8.462 3.846-3.847 3.847-3.847 8.463v455.382q0 4.616 3.847 8.463 3.846 3.846 8.462 3.846ZM222.309-120.003q-30.307 0-51.307-21-21-21-21-51.307v-485.382q0-12.769 8.615-21.384 8.616-8.615 21.384-8.615 12.769 0 21.385 8.615 8.615 8.615 8.615 21.384v485.382q0 4.616 3.846 8.462 3.847 3.847 8.462 3.847h365.382q12.769 0 21.385 8.615 8.615 8.615 8.615 21.384t-8.615 21.384q-8.616 8.615-21.385 8.615H222.309ZM349.999-320V-800-320Z")
             p Copy invite link
@@ -25,14 +25,19 @@ block content
             #teams
                 +players(players)
         .main-panel
-            #turn
-                if turn === 'red'
-                    p Red Turn
-                else
-                    p Blue Turn
-                button#end-turn End Turn
+            #game-info
+                #scores
+                    span#scores-red= gameState.redScore
+                    | -
+                    span#scores-blue= gameState.blueScore
+                #turn
+                    if gameState.turn === 'red'
+                        p Red's Turn
+                    else
+                        p Blue's Turn
+                    button#end-turn End Turn
             #board
-                +board(cards)
+                +board(gameState.cards)
             button#new-game New Game
         .side-panel
     

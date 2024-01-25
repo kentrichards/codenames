@@ -20,6 +20,9 @@
  * @property {Card[]} cards
  * @property {number} idleTime
  * @property {Team} turn
+ * @property {'playing' | 'gameOver'} state
+ * @property {number} redScore
+ * @property {number} blueScore
  */
 
 /**
