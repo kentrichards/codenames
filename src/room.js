@@ -72,8 +72,7 @@ export function applyAction(room, ws, username, action) {
                         agent: card.agent,
                         cardType: card.cardType,
                         winnerMsg: 'Red Team Wins!',
-                        redScore: room.gameState.redScore,
-                        blueScore: room.gameState.blueScore,
+                        scoreMsg: `${room.gameState.redScore}-${room.gameState.blueScore}`,
                     },
                 }
             } else if (room.gameState.blueScore === 0) {
@@ -84,8 +83,7 @@ export function applyAction(room, ws, username, action) {
                         agent: card.agent,
                         cardType: card.cardType,
                         winnerMsg: 'Blue Team Wins!',
-                        redScore: room.gameState.redScore,
-                        blueScore: room.gameState.blueScore,
+                        scoreMsg: `${room.gameState.redScore}-${room.gameState.blueScore}`,
                     },
                 }
             }
@@ -97,8 +95,7 @@ export function applyAction(room, ws, username, action) {
                     payload: {
                         agent: card.agent,
                         cardType: card.cardType,
-                        redScore: room.gameState.redScore,
-                        blueScore: room.gameState.blueScore,
+                        scoreMsg: `${room.gameState.redScore}-${room.gameState.blueScore}`,
                         newTurnMsg: team === 'red' ? "Blue's Turn" : "Red's Turn",
                     },
                 }
@@ -109,8 +106,7 @@ export function applyAction(room, ws, username, action) {
                 payload: {
                     agent: card.agent,
                     cardType: card.cardType,
-                    redScore: room.gameState.redScore,
-                    blueScore: room.gameState.blueScore,
+                    scoreMsg: `${room.gameState.redScore}-${room.gameState.blueScore}`,
                 },
             }
 

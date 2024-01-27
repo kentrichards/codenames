@@ -26,10 +26,7 @@ block content
                 +players(players)
         .main-panel
             #game-info
-                #scores
-                    span#scores-red= gameState.redScore
-                    | -
-                    span#scores-blue= gameState.blueScore
+                p#scores #{gameState.redScore}-#{gameState.blueScore}
                 #turn
                     if gameState.turn === 'red'
                         p Red's Turn

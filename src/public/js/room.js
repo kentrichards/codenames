@@ -21,46 +21,32 @@ function openWebSocketConnection() {
             // TODO: Remove eventually
             console.log('message received', action.payload)
         } else if (action.type === 'revealCard') {
-            const { agent, cardType, redScore, blueScore } = action.payload
+            const { agent, cardType, scoreMsg } = action.payload
             const card = cardEls.find(card => card.innerText === agent)
             card.classList.add(cardType)
-
-            if (cardType === 'red' || cardType === 'blue') {
-                redScoreEl.innerText = redScore
-                blueScoreEl.innerText = blueScore
-            }
+            scoreEl.innerText = scoreMsg
         } else if (action.type === 'endTurnForced') {
-            const { agent, cardType, redScore, blueScore, newTurnMsg } = action.payload
+            const { agent, cardType, scoreMsg, newTurnMsg } = action.payload
             const card = cardEls.find(card => card.innerText === agent)
             card.classList.add(cardType)
-
-            if (cardType === 'red' || cardType === 'blue') {
-                redScoreEl.innerText = redScore
-                blueScoreEl.innerText = blueScore
-            }
-
+            scoreEl.innerText = scoreMsg
             turnEl.innerText = newTurnMsg
         } else if (action.type === 'userConnected' || action.type === 'userDisconnected') {
             teamsEl.innerHTML = action.payload
         } else if (action.type === 'newGame') {
-            const { newBoard, redScore, blueScore, turnMsg } = action.payload
+            const { newBoard, scoreMsg, turnMsg } = action.payload
             boardEl.innerHTML = newBoard
-            redScoreEl.innerText = redScore
-            blueScoreEl.innerText = blueScore
+            scoreEl.innerText = scoreMsg
             turnEl.innerText = turnMsg
             cardEls = /** @type {HTMLButtonElement[]} */ (Array.from(document.getElementsByClassName('card')))
             attachCardListeners()
         } else if (action.type === 'endTurnClicked') {
             turnEl.innerText = action.payload
         } else if (action.type === 'gameOver') {
-            const { agent, cardType, winnerMsg, redScore, blueScore } = action.payload
+            const { agent, cardType, winnerMsg, scoreMsg } = action.payload
             const card = cardEls.find(card => card.innerText === agent)
             card.classList.add(cardType)
-
-            if (cardType === 'red' || cardType === 'blue') {
-                redScoreEl.innerText = redScore
-                blueScoreEl.innerText = blueScore
-            }
+            scoreEl.innerText = scoreMsg
             turnEl.innerText = winnerMsg
         } else {
             console.error(`Unknown message received: ${ev.data}`)
@@ -68,8 +54,7 @@ function openWebSocketConnection() {
     })
 }
 
-const redScoreEl = /** @type {HTMLSpanElement} */ (document.getElementById('scores-red'))
-const blueScoreEl = /** @type {HTMLSpanElement} */ (document.getElementById('scores-blue'))
+const scoreEl = /** @type {HTMLParagraphElement} */ (document.getElementById('scores'))
 
 const turnEl = /** @type {HTMLParagraphElement} */ (document.querySelector('#turn > p'))
 const teamsEl = /** @type {HTMLDivElement} */ (document.getElementById('teams'))
