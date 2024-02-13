@@ -5,13 +5,13 @@ const activeRooms = []
 /**
  * @returns {string} the roomCode of the newly created room
  */
-export function createRoom() {
+export function createRoom(mode) {
     const newRoom = {
         roomCode: generateRoomCode(),
         players: [],
         gameState: {
             inProgress: false,
-            cards: getCards(),
+            cards: getCards(mode),
             idleTime: 0,
         },
     }

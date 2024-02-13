@@ -1,21 +1,5 @@
-const createGameBtn = /** @type {HTMLButtonElement} */ (document.getElementById('create-game'))
 const roomCodeInput = /** @type {HTMLInputElement} */ (document.getElementById('room-code'))
 const joinGameBtn = /** @type {HTMLButtonElement} */ (document.getElementById('join-game'))
-
-createGameBtn.addEventListener('click', (/** @type {MouseEvent} */ ev) => {
-    ev.preventDefault()
-    fetch('/createGame')
-        .then(res => {
-            if (!res.ok) {
-                throw new Error(`${res.status} ${res.statusText}`)
-            } else if (res.redirected) {
-                window.location.href = res.url
-            }
-        })
-        .catch(err => {
-            console.error(`Error creating game: ${err.message}`)
-        })
-})
 
 roomCodeInput.addEventListener('input', () => {
     roomCodeInput.value = roomCodeInput.value.toUpperCase()

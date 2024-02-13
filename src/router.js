@@ -10,7 +10,8 @@ export default expressWsInstance => {
     })
 
     router.get('/createGame', (req, res) => {
-        const roomCode = createRoom()
+        const mode = req.query.mode
+        const roomCode = createRoom(mode)
         res.redirect(`/${roomCode}`)
     })
 
