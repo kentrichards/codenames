@@ -28,7 +28,9 @@ function openWebSocketConnection() {
             }
             console.log(`${action.payload.msg}`)
         } else if (action.type === 'startGame') {
+            console.log('Game has begun!')
             lobbyDialogEl.close()
+            lobbyDialogEl.parentElement.removeChild(lobbyDialogEl)
         } else if (action.type === 'message') {
             console.log('message received', action.payload)
         } else if (action.type === 'revealCard') {

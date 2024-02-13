@@ -1,15 +1,6 @@
 extends layout
 
 block content
-    if !username
-        dialog#usernameCheck
-            label(for="username") Enter username
-            input(type="text" name="username" id="username" autofocus)
-            button(id="submit") Submit
-            a(href="/") Return to main menu
-        script(defer).
-            window.onload = () => document.getElementById('usernameCheck').showModal()
-
     if !inProgress
         dialog#lobby
             h2 Lobby #{roomCode}
@@ -27,9 +18,17 @@ block content
                         label(for="blue") blue
             button(id="start-game") Start game
             button#leave-lobby(href="/") Leave lobby
-        if username
-            script(defer).
-                window.onload = () => document.getElementById('lobby').showModal()
+        script(defer).
+            window.onload = () => document.getElementById('lobby').showModal()
+            
+    if !username
+        dialog#usernameCheck
+            label(for="username") Enter username
+            input(type="text" name="username" id="username" autofocus)
+            button(id="submit") Submit
+            a(href="/") Return to main menu
+        script(defer).
+            window.onload = () => document.getElementById('usernameCheck').showModal()
 
     h1 Room #{roomCode}
     button#leave-room Leave room
