@@ -19,7 +19,8 @@ function openWebSocketConnection() {
             window.location.href = action.payload
         } else if (action.type === 'playerJoin') {
             if (lobbyDialogEl) {
-                addNewPlayer(action.payload.player)
+                if (action.payload.player.username == getCookieValue('username')) addSelfToLobby(action.payload.player)
+                else addPlayerToLobby(action.payload.player)
             }
             console.log(`${action.payload.msg}`)
         } else if (action.type === 'playerLeave') {
@@ -27,6 +28,36 @@ function openWebSocketConnection() {
                 removePlayer(action.payload.playerId)
             }
             console.log(`${action.payload.msg}`)
+        } else if (action.type === 'playerUpdate') {
+            const newInfo = action.payload.updateValue
+            try {
+                const playerBox = /** @type {HTMLDivElement} */ document.getElementById(action.payload.player)
+                if (action.payload.updateType === 'team') {
+                    if (playerBox.classList.contains('red') && newInfo === 'blue') {
+                        playerBox.classList.replace('red', newInfo)
+                    } else if (playerBox.classList.contains('blue') && newInfo === 'red') {
+                        playerBox.classList.replace('blue', newInfo)
+                    } else {
+                        playerBox.classList.add(newInfo)
+                    }
+
+                    let teamElem = playerBox.getElementsByClassName('team')
+                    teamElem[0].innerHTML = newInfo
+                } else if (action.payload.updateType === 'role') {
+                    if (playerBox.classList.contains('operative') && newInfo === 'spymaster') {
+                        playerBox.classList.replace('operative', newInfo)
+                    } else if (playerBox.classList.contains('spymaster') && newInfo === 'operative') {
+                        playerBox.classList.replace('spymaster', newInfo)
+                    } else {
+                        playerBox.classList.add(newInfo)
+                    }
+
+                    let roleElem = playerBox.getElementsByClassName('role')
+                    roleElem[0].innerHTML = newInfo
+                }
+            } catch (error) {
+                console.log(`err: ${error}, player ${action.payload.player} not found`)
+            }
         } else if (action.type === 'startGame') {
             console.log('Game has begun!')
             lobbyDialogEl.close()
@@ -133,7 +164,7 @@ boardEl.addEventListener('keydown', ev => {
 })
 
 // I hate this but I'm leaving it for now
-function addNewPlayer(newPlayer) {
+function addSelfToLobby(newPlayer) {
     const playerBox = document.createElement('div')
     playerBox.setAttribute('class', 'player')
     playerBox.setAttribute('id', `${newPlayer.username}`)
@@ -142,21 +173,61 @@ function addNewPlayer(newPlayer) {
     playerName.innerText += newPlayer.username
     playerBox.appendChild(playerName)
 
-    addPlayerOption(playerBox, 'role', 'spymaster', newPlayer.username)
-    addPlayerOption(playerBox, 'role', 'operative', newPlayer.username)
-    addPlayerOption(playerBox, 'team', 'red', newPlayer.username)
-    addPlayerOption(playerBox, 'team', 'blue', newPlayer.username)
+    addPlayerOption(playerBox, 'role', 'spymaster')
+    addPlayerOption(playerBox, 'role', 'operative')
+    addPlayerOption(playerBox, 'team', 'red')
+    addPlayerOption(playerBox, 'team', 'blue')
 
     playersDiv.appendChild(playerBox)
 }
 
-function addPlayerOption(parent, type, value, playerIndex) {
-    const html = `<input type='radio' id='${value}' name='${type}-${playerIndex}' value='${value}'>\
-                  <label for='${value}'>${value}</label>`
+function addPlayerToLobby(newPlayer) {
+    const playerBox = document.createElement('div')
+    playerBox.setAttribute('class', 'player')
+    playerBox.setAttribute('id', `${newPlayer.username}`)
+
+    const playerName = document.createElement('h4')
+    playerName.innerText = newPlayer.username
+    playerBox.appendChild(playerName)
+
+    const playerTeam = document.createElement('h3')
+    playerTeam.setAttribute('class', `${newPlayer.username} team`)
+    playerTeam.innerText = `${newPlayer.team}`
+    playerBox.appendChild(playerTeam)
+
+    const playerRole = document.createElement('h3')
+    playerRole.setAttribute('class', `${newPlayer.username} role`)
+    playerRole.innerText = `${newPlayer.role}`
+    playerBox.appendChild(playerRole)
+
+    playersDiv.appendChild(playerBox)
+}
+
+function addPlayerOption(parent, type, value) {
+    const newId = `btn-${value}`
+    const html = `<button id="${newId}" onclick="updatePlayerMsg('${type}', '${value}')">${value}</button>`
     parent.innerHTML += html
+}
+
+function updatePlayerMsg(type, value) {
+    const action = {
+        type: 'playerUpdate',
+        updateType: type,
+        updateValue: value,
+    }
+    socket.send(JSON.stringify(action))
+    console.log(action)
 }
 
 function removePlayer(playerId) {
     const player = document.getElementById(`${playerId}`)
     player.parentNode.removeChild(player)
+}
+
+function getCookieValue(name) {
+    const regex = new RegExp(`(^| )${name}=([^;]+)`)
+    const match = document.cookie.match(regex)
+    if (match) {
+        return match[2]
+    }
 }

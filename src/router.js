@@ -66,10 +66,23 @@ export default expressWsInstance => {
 
                 room.players.push(newPlayer)
 
-
                 broadcast(room, 'playerJoin', {
                     player: newPlayer,
                     msg: `User ${username} joined room ${roomCode}`,
+                })
+            } else if (action.type === 'playerUpdate') {
+                const player = room.players[getPlayerIndex(room, ws)]
+
+                if (action.updateType === 'role') {
+                    player.role = action.updateValue
+                } else if (action.updateType === 'team') {
+                    player.team = action.updateValue
+                }
+
+                broadcast(room, 'playerUpdate', {
+                    player: player.username,
+                    updateType: action.updateType,
+                    updateValue: action.updateValue
                 })
             } else if (action.type === 'cardClicked') {
                 const card = room.gameState.cards.find(card => card.agent === action.payload)

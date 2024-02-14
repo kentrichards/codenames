@@ -44,6 +44,14 @@
         justify-content: center;
     }
 
+    .red {
+        background: red;
+    }
+
+    .blue {
+        background: blue;
+    }
+
     #board {
         width: 50%;
         margin: 0 auto;
