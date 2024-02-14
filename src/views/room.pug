@@ -5,16 +5,16 @@ block content
         dialog#lobby
             h2 Lobby #{roomCode}
             #players
-                each player, idx in players
-                    div.player(id=`player-${idx}`)
+                each player in players
+                    div.player(id=`player-${player.username}`)
                         h4= player.username
-                        input(type="radio" name=`role-${idx}` id="spymaster" value="spymaster")
+                        input(type="radio" name=`role-${player.username}` id="spymaster" value="spymaster")
                         label(for="spymaster") spymaster
-                        input(type="radio" name=`role-${idx}` id="operative" value="operative")
+                        input(type="radio" name=`role-${player.username}` id="operative" value="operative")
                         label(for="operative") operative
-                        input(type="radio" name=`team-${idx}` id="red" value="red")
+                        input(type="radio" name=`team-${player.username}` id="red" value="red")
                         label(for="red") red
-                        input(type="radio" name=`team-${idx}` id="blue" value="blue")
+                        input(type="radio" name=`team-${player.username}` id="blue" value="blue")
                         label(for="blue") blue
             button(id="start-game") Start game
             button#leave-lobby(href="/") Leave lobby

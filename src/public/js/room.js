@@ -76,7 +76,6 @@ const lobbyDialogEl = /** @type {HTMLDialogElement} */ (document.getElementById(
 const startGameBtn = /** @type {HTMLButtonElement} */ (document.getElementById('start-game'))
 const leaveLobbyBtn = /** @type {HTMLButtonElement} */ (document.getElementById('leave-lobby'))
 const playersDiv = /** @type {HTMLDivElement} */ (document.getElementById('players'))
-let playersList = /** @type {HTMLDivElement[]} */ (Array.from(document.getElementsByClassName('player')))
 if (lobbyDialogEl) {
     /* Prevent the 'Esc' key from closing the dialog */
     lobbyDialogEl.addEventListener('cancel', ev => ev.preventDefault())
@@ -135,23 +134,20 @@ boardEl.addEventListener('keydown', ev => {
 
 // I hate this but I'm leaving it for now
 function addNewPlayer(newPlayer) {
-    const playerId = playersList.length
     const playerBox = document.createElement('div')
     playerBox.setAttribute('class', 'player')
-    playerBox.setAttribute('id', `player-${playerId}`)
+    playerBox.setAttribute('id', `player-${newPlayer.username}`)
 
     const playerName = document.createElement('h4')
     playerName.innerText += newPlayer.username
     playerBox.appendChild(playerName)
 
-    addPlayerOption(playerBox, 'role', 'spymaster', playerId)
-    addPlayerOption(playerBox, 'role', 'operative', playerId)
-    addPlayerOption(playerBox, 'team', 'red', playerId)
-    addPlayerOption(playerBox, 'team', 'blue', playerId)
+    addPlayerOption(playerBox, 'role', 'spymaster', newPlayer.username)
+    addPlayerOption(playerBox, 'role', 'operative', newPlayer.username)
+    addPlayerOption(playerBox, 'team', 'red', newPlayer.username)
+    addPlayerOption(playerBox, 'team', 'blue', newPlayer.username)
 
     playersDiv.appendChild(playerBox)
-    playersList = /** @type {HTMLDivElement[]} */ (Array.from(document.getElementsByClassName('player')))
-    console.log(playersList.values())
 }
 
 function addPlayerOption(parent, type, value, playerIndex) {
