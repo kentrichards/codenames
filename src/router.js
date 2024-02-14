@@ -86,7 +86,7 @@ export default expressWsInstance => {
         ws.on('close', () => {
             room.gameState.idleTime = 0
             broadcast(room, 'playerLeave', { 
-                playerId: getPlayerIndex(room, ws), 
+                playerId: username,
                 msg: `User ${username} left the room`,
             })
             removePlayer(room, ws)

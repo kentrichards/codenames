@@ -6,7 +6,7 @@ block content
             h2 Lobby #{roomCode}
             #players
                 each player in players
-                    div.player(id=`player-${player.username}`)
+                    div.player(id=`${player.username}`)
                         h4= player.username
                         input(type="radio" name=`role-${player.username}` id="spymaster" value="spymaster")
                         label(for="spymaster") spymaster

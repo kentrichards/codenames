@@ -136,7 +136,7 @@ boardEl.addEventListener('keydown', ev => {
 function addNewPlayer(newPlayer) {
     const playerBox = document.createElement('div')
     playerBox.setAttribute('class', 'player')
-    playerBox.setAttribute('id', `player-${newPlayer.username}`)
+    playerBox.setAttribute('id', `${newPlayer.username}`)
 
     const playerName = document.createElement('h4')
     playerName.innerText += newPlayer.username
@@ -157,6 +157,6 @@ function addPlayerOption(parent, type, value, playerIndex) {
 }
 
 function removePlayer(playerId) {
-    const player = document.getElementById(`player-${playerId}`)
+    const player = document.getElementById(`${playerId}`)
     player.parentNode.removeChild(player)
 }
