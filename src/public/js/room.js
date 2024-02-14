@@ -76,7 +76,7 @@ const lobbyDialogEl = /** @type {HTMLDialogElement} */ (document.getElementById(
 const startGameBtn = /** @type {HTMLButtonElement} */ (document.getElementById('start-game'))
 const leaveLobbyBtn = /** @type {HTMLButtonElement} */ (document.getElementById('leave-lobby'))
 const playersDiv = /** @type {HTMLDivElement} */ (document.getElementById('players'))
-const playersList = /** @type {HTMLDivElement[]} */ (Array.from(document.getElementsByClassName('player')))
+let playersList = /** @type {HTMLDivElement[]} */ (Array.from(document.getElementsByClassName('player')))
 if (lobbyDialogEl) {
     /* Prevent the 'Esc' key from closing the dialog */
     lobbyDialogEl.addEventListener('cancel', ev => ev.preventDefault())
@@ -150,6 +150,8 @@ function addNewPlayer(newPlayer) {
     addPlayerOption(playerBox, 'team', 'blue', playerId)
 
     playersDiv.appendChild(playerBox)
+    playersList = /** @type {HTMLDivElement[]} */ (Array.from(document.getElementsByClassName('player')))
+    console.log(playersList.values())
 }
 
 function addPlayerOption(parent, type, value, playerIndex) {
