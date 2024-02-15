@@ -45,7 +45,7 @@ export default expressWsInstance => {
 
         ws.on('message', (/** @type {String} */ msg) => {
             const action = JSON.parse(msg)
-            room.gameState.idleTime = 0
+            room.idleTime = 0
             const result = applyAction(room, ws, username, action)
             if (result) {
                 broadcast(room, result.type, result.payload)
@@ -53,7 +53,7 @@ export default expressWsInstance => {
         })
 
         ws.on('close', () => {
-            room.gameState.idleTime = 0
+            room.idleTime = 0
             removePlayer(room, ws)
             const html = renderTemplate('playersTemplate', { players: room.players })
             broadcast(room, 'userDisconnected', html)

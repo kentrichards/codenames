@@ -1,7 +1,7 @@
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { renderFile } from 'pug'
-import { getCards } from './game.js'
+import { newGameState } from './game.js'
 
 const activeRooms = []
 
@@ -17,17 +17,18 @@ export function applyAction(room, ws, username, action) {
     const { type, payload } = action
 
     if (type === 'newGame') {
-        room.gameState.redScore = 9
-        room.gameState.blueScore = 8
-        room.gameState.turn = 'red'
-        room.gameState.state = 'playing'
-        room.gameState.cards = getCards(room.gameState.gameMode)
-        const html = renderTemplate('boardTemplate', { cards: room.gameState.cards })
+        room.playsFirst = room.playsFirst === 'red' ? 'blue' : 'red'
+        room.gameState = newGameState(room.playsFirst, room.gameState.gameMode)
+        const newBoard = renderTemplate('boardTemplate', { cards: room.gameState.cards })
+        const scoreMsg = renderTemplate('scoreTemplate', {
+            redScore: room.gameState.redScore,
+            blueScore: room.gameState.blueScore,
+        })
         return {
             type: 'newGame',
             payload: {
-                newBoard: html,
-                scoreMsg: `${room.gameState.redScore}-${room.gameState.blueScore}`,
+                newBoard,
+                scoreMsg,
                 turnMsg: room.gameState.turn === 'red' ? "Red's Turn" : "Blue's Turn",
             },
         }
@@ -46,6 +47,17 @@ export function applyAction(room, ws, username, action) {
         const card = room.gameState.cards.find(card => card.agent === payload)
         card.revealed = true
 
+        if (card.cardType === 'red') {
+            room.gameState.redScore--
+        } else if (card.cardType === 'blue') {
+            room.gameState.blueScore--
+        }
+
+        const scoreMsg = renderTemplate('scoreTemplate', {
+            redScore: room.gameState.redScore,
+            blueScore: room.gameState.blueScore,
+        })
+
         if (card.cardType === 'assassin') {
             room.gameState.state = 'gameOver'
             return {
@@ -59,12 +71,6 @@ export function applyAction(room, ws, username, action) {
             }
         }
 
-        if (card.cardType === 'red') {
-            room.gameState.redScore--
-        } else if (card.cardType === 'blue') {
-            room.gameState.blueScore--
-        }
-
         if (room.gameState.redScore === 0) {
             room.gameState.state = 'gameOver'
             return {
@@ -73,10 +79,12 @@ export function applyAction(room, ws, username, action) {
                     agent: card.agent,
                     cardType: card.cardType,
                     winnerMsg: 'Red Team Wins!',
-                    scoreMsg: `${room.gameState.redScore}-${room.gameState.blueScore}`,
+                    scoreMsg,
                 },
             }
-        } else if (room.gameState.blueScore === 0) {
+        }
+
+        if (room.gameState.blueScore === 0) {
             room.gameState.state = 'gameOver'
             return {
                 type: 'gameOver',
@@ -84,7 +92,7 @@ export function applyAction(room, ws, username, action) {
                     agent: card.agent,
                     cardType: card.cardType,
                     winnerMsg: 'Blue Team Wins!',
-                    scoreMsg: `${room.gameState.redScore}-${room.gameState.blueScore}`,
+                    scoreMsg,
                 },
             }
         }
@@ -96,7 +104,7 @@ export function applyAction(room, ws, username, action) {
                 payload: {
                     agent: card.agent,
                     cardType: card.cardType,
-                    scoreMsg: `${room.gameState.redScore}-${room.gameState.blueScore}`,
+                    scoreMsg,
                     newTurnMsg: team === 'red' ? "Blue's Turn" : "Red's Turn",
                 },
             }
@@ -107,7 +115,7 @@ export function applyAction(room, ws, username, action) {
             payload: {
                 agent: card.agent,
                 cardType: card.cardType,
-                scoreMsg: `${room.gameState.redScore}-${room.gameState.blueScore}`,
+                scoreMsg,
             },
         }
     }
@@ -152,27 +160,22 @@ export function renderTemplate(templateName, locals) {
  * @returns {string} the roomCode of the newly created room
  */
 export function createRoom(gameMode) {
+    const playsFirst = 'red'
     const newRoom = {
         roomCode: generateRoomCode(),
+        gameState: newGameState(playsFirst, gameMode),
         players: [],
-        gameState: {
-            gameMode,
-            cards: getCards(gameMode),
-            idleTime: 0,
-            turn: 'red',
-            state: 'playing',
-            redScore: 9,
-            blueScore: 8,
-        },
+        playsFirst,
+        idleTime: 0,
     }
-    newRoom.gameState.idleTimer = setInterval(idleTimeout, 60000, newRoom)
+    newRoom.idleTimer = setInterval(idleTimeout, 60000, newRoom)
     activeRooms.push(newRoom)
     return newRoom.roomCode
 }
 
 export function closeRoom(room) {
     room.players.forEach(player => redirectSocket(player.socket, '/'))
-    clearInterval(room.gameState.idleTimer)
+    clearInterval(room.idleTimer)
     const roomIndex = activeRooms.indexOf(room)
     activeRooms.splice(roomIndex, 1)
 }
@@ -228,11 +231,11 @@ export function broadcast(room, type, payload) {
 }
 
 function idleTimeout(room) {
-    room.gameState.idleTime += 1
+    room.idleTime += 1
 
-    if (room.players.length < 1 && room.gameState.idleTime > 1) {
+    if (room.players.length < 1 && room.idleTime > 1) {
         closeRoom(room)
-    } else if (room.gameState.idleTime > 9) {
+    } else if (room.idleTime > 9) {
         closeRoom(room)
     }
 }

@@ -1,3 +1,8 @@
+:root {
+    --colour-red: red;
+    --colour-blue: dodgerblue;
+}
+
 @layer base {
     *,
     *::before,
@@ -88,14 +93,14 @@
     }
 
     .card.red {
-        background: red;
-        border-color: red;
+        background: var(--colour-red);
+        border-color: var(--colour-red);
         color: white;
     }
 
     .card.blue {
-        background: dodgerblue;
-        border-color: dodgerblue;
+        background: var(--colour-blue);
+        border-color: var(--colour-blue);
         color: white;
     }
 
@@ -108,5 +113,15 @@
         background: black;
         border-color: black;
         color: white;
+    }
+
+    #score-red {
+        color: var(--colour-red);
+        font-weight: bold;
+    }
+
+    #score-blue {
+        color: var(--colour-blue);
+        font-weight: bold;
     }
 }

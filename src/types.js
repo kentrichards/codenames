@@ -3,6 +3,9 @@
  * @property {string} roomCode
  * @property {Player[]} players
  * @property {GameState} gameState
+ * @property {Team} playsFirst
+ * @property {NodeJS.Timeout | null} idleTimer
+ * @property {number} idleTime
  */
 
 /**
@@ -15,10 +18,8 @@
 
 /**
  * @typedef {Object} GameState
- * @property {NodeJS.Timeout | null} idleTimer
  * @property {GameMode} gameMode
  * @property {Card[]} cards
- * @property {number} idleTime
  * @property {Team} turn
  * @property {'playing' | 'gameOver'} state
  * @property {number} redScore

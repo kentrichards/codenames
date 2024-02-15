@@ -26,7 +26,7 @@ block content
                 +players(players)
         .main-panel
             #game-info
-                p#scores #{gameState.redScore}-#{gameState.blueScore}
+                +scores(gameState.redScore, gameState.blueScore)
                 #turn
                     if gameState.turn === 'red'
                         p Red's Turn

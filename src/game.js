@@ -9,6 +9,31 @@ const agents = {
 }
 
 /**
+ * @param {Team} playsFirst the team that will play first
+ * @param {GameMode} gameMode determines the set of cards to draw from
+ * @returns {GameState} a new game state object, representing a new game
+ */
+export function newGameState(playsFirst, gameMode) {
+    let redScore, blueScore
+    if (playsFirst === 'red') {
+        redScore = 9
+        blueScore = 8
+    } else {
+        redScore = 8
+        blueScore = 9
+    }
+
+    return {
+        gameMode,
+        cards: getCards(gameMode),
+        turn: playsFirst,
+        state: 'playing',
+        redScore,
+        blueScore,
+    }
+}
+
+/**
  * Draw 25 cards of the type given by gameMode
  * @param {'default' | 'duet' | 'undercover'} gameMode
  * @returns {Card[]} the 25 card deck, in agent:role pairs

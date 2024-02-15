@@ -13,3 +13,9 @@ mixin players(players)
 mixin board(cards)
     each card, idx in cards
         button.card(class=card.revealed ? card.cardType : '' data-index=idx)= card.agent
+
+mixin scores(redScore, blueScore)
+    p#scores
+        span#score-red= redScore
+        | -
+        span#score-blue= blueScore

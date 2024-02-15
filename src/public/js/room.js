@@ -24,19 +24,19 @@ function openWebSocketConnection() {
             const { agent, cardType, scoreMsg } = action.payload
             const card = cardEls.find(card => card.innerText === agent)
             card.classList.add(cardType)
-            scoreEl.innerText = scoreMsg
+            scoreEl.innerHTML = scoreMsg
         } else if (action.type === 'endTurnForced') {
             const { agent, cardType, scoreMsg, newTurnMsg } = action.payload
             const card = cardEls.find(card => card.innerText === agent)
             card.classList.add(cardType)
-            scoreEl.innerText = scoreMsg
+            scoreEl.innerHTML = scoreMsg
             turnEl.innerText = newTurnMsg
         } else if (action.type === 'userConnected' || action.type === 'userDisconnected') {
             teamsEl.innerHTML = action.payload
         } else if (action.type === 'newGame') {
             const { newBoard, scoreMsg, turnMsg } = action.payload
             boardEl.innerHTML = newBoard
-            scoreEl.innerText = scoreMsg
+            scoreEl.innerHTML = scoreMsg
             turnEl.innerText = turnMsg
             cardEls = /** @type {HTMLButtonElement[]} */ (Array.from(document.getElementsByClassName('card')))
             attachCardListeners()
@@ -46,7 +46,7 @@ function openWebSocketConnection() {
             const { agent, cardType, winnerMsg, scoreMsg } = action.payload
             const card = cardEls.find(card => card.innerText === agent)
             card.classList.add(cardType)
-            scoreEl.innerText = scoreMsg
+            scoreEl.innerHTML = scoreMsg
             turnEl.innerText = winnerMsg
         } else {
             console.error(`Unknown message received: ${ev.data}`)
