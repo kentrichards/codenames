@@ -32,9 +32,43 @@
         margin: 0;
         line-height: 1.15;
     }
+
+    button {
+        cursor: pointer;
+    }
 }
 
 @layer components {
+    .btn {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        width: 20rem;
+        background: black;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+    }
+
+    .btn:hover {
+        background: hsl(0, 0%, 15%);
+    }
+
+    .btn:active {
+        transform: scale(99%);
+        transition: transform 0.2s ease;
+    }
+
+    .btn:focus-visible {
+        outline: solid 2px #fcd34d;
+    }
+
+    .icon {
+        fill: white;
+    }
+
     .banner {
         display: flex;
         align-items: center;
@@ -77,7 +111,6 @@
     .card {
         background: #fff;
         border: 2px solid #999;
-        cursor: pointer;
     }
 
     .card:hover {

@@ -15,5 +15,8 @@ block content
         label(for="room-code") Room code
         input(type="text" name="room-code" id="room-code" maxlength="4")
         br
-        button#join-game Join game
+        button#join-game.btn
+            p Join game
+            svg.icon(xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0 -960 960 960")
+                path(d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z")
     script(src="/js/index.js" defer)
