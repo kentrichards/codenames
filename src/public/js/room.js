@@ -96,8 +96,8 @@ leaveRoomBtn.addEventListener('click', (/** @type MouseEvent*/ ev) => {
 let linkCopiedTimeout
 let linkRecentlyCopied = false
 const copyLinkBtn = /** @type {HTMLButtonElement} */ (document.getElementById('copy-link'))
-const copyLinkBtnWidth = copyLinkBtn.offsetWidth
-const copyLinkBtnHeight = copyLinkBtn.offsetHeight
+const copyLinkBtnWidth = copyLinkBtn.getBoundingClientRect().width
+const copyLinkBtnHeight = copyLinkBtn.getBoundingClientRect().height
 const copyLinkBtnContent = copyLinkBtn.innerHTML
 copyLinkBtn.addEventListener('click', (/** @type MouseEvent */ ev) => {
     ev.preventDefault()

@@ -1,6 +1,7 @@
 :root {
-    --colour-red: red;
-    --colour-blue: dodgerblue;
+    --colour-red: #dc2828; /* Tailwind red 600 */
+    --colour-blue: #3b82f6; /* Tailwind blue 500 */
+    --colour-neutral: #a7f3d0; /* Tailwind emerald 200 */
 }
 
 @layer base {
@@ -105,8 +106,8 @@
     }
 
     .card.neutral {
-        background: bisque;
-        border-color: bisque;
+        background: var(--colour-neutral);
+        border-color: var(--colour-neutral);
     }
 
     .card.assassin {
