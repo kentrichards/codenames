@@ -25,7 +25,7 @@ export function newGameState(playsFirst, gameMode) {
 
     return {
         gameMode,
-        cards: getCards(gameMode),
+        cards: getCards(playsFirst, gameMode),
         turn: playsFirst,
         state: 'playing',
         redScore,
@@ -35,12 +35,13 @@ export function newGameState(playsFirst, gameMode) {
 
 /**
  * Draw 25 cards of the type given by gameMode
+ * @param {Team} playsFirst the team with more cards
  * @param {'default' | 'duet' | 'undercover'} gameMode
  * @returns {Card[]} the 25 card deck, in agent:role pairs
  */
-export function getCards(gameMode = 'default') {
+export function getCards(playsFirst = 'red', gameMode = 'default') {
     const types = /** @type {CardType[]} */ ([
-        'red',
+        playsFirst,
         'red',
         'red',
         'red',

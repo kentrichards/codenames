@@ -65,6 +65,7 @@ export function applyAction(room, ws, username, action) {
                 payload: {
                     agent: card.agent,
                     cardType: card.cardType,
+                    scoreMsg,
                     winner: room.gameState.turn === 'red' ? 'blue' : 'red',
                     winnerMsg: room.gameState.turn === 'red' ? 'Blue Team Wins!' : 'Red Team Wins!',
                 },
