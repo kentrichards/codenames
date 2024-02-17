@@ -109,7 +109,7 @@
         font-size: 2rem;
     }
 
-    #index-select-packs,
+    #index-select-mode,
     #index-room-code {
         margin-bottom: auto;
     }
@@ -125,13 +125,13 @@
         background: black;
     }
 
-    #index-select-packs {
+    #index-select-mode {
         width: 100%;
         display: flex;
         justify-content: space-between;
     }
 
-    .select-pack-card {
+    .select-mode-card {
         /* See https://moderncss.dev/pure-css-custom-checkbox-style/ */
         width: 5rem;
         height: 7rem;
@@ -140,14 +140,14 @@
         justify-content: center;
     }
 
-    .select-pack-label {
+    .select-mode-label {
         position: absolute;
         font-size: 0.8rem;
         margin-top: 1rem;
         cursor: pointer;
     }
 
-    .select-pack-option {
+    .select-mode-option {
         appearance: none;
         -webkit-appearance: none;
         background: white;
@@ -160,12 +160,12 @@
         outline: none;
     }
 
-    .select-pack-option:focus-visible {
+    .select-mode-option:focus-visible {
         outline: dashed 2px black;
         outline-offset: 2px;
     }
 
-    .select-pack-option::before {
+    .select-mode-option::before {
         content: '';
         position: absolute;
         height: 3rem;
@@ -177,11 +177,11 @@
         transition: 120ms transform ease-in-out;
         clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
     }
-    .select-pack-option:checked {
+    .select-mode-option:checked {
         border: 2px solid var(--colour-highlight);
     }
 
-    .select-pack-option:checked::before {
+    .select-mode-option:checked::before {
         transform: scale(1);
         background: var(--colour-highlight);
     }
