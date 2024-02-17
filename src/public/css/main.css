@@ -2,6 +2,7 @@
     --colour-red: #dc2828; /* Tailwind red 600 */
     --colour-blue: #3b82f6; /* Tailwind blue 500 */
     --colour-neutral: #a7f3d0; /* Tailwind emerald 200 */
+    --colour-highlight: #fcd34d; /* Tailwind amber 300 */
 }
 
 @layer base {
@@ -44,12 +45,12 @@
         justify-content: center;
         align-items: center;
         gap: 0.5rem;
-        width: 20rem;
         background: black;
         color: white;
         border: none;
         border-radius: 8px;
         padding: 0.5rem 1rem;
+        width: 100%;
     }
 
     .btn:hover {
@@ -62,13 +63,131 @@
     }
 
     .btn:focus-visible {
-        outline: solid 2px #fcd34d;
+        outline: solid 2px var(--colour-highlight);
     }
 
-    .icon {
+    .btn > svg {
         fill: white;
     }
 
+    /* INDEX */
+    /* ----------------------------------------------------------------------------------------- */
+    #index {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+    }
+
+    #index-title {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-transform: uppercase;
+        font-size: 2rem;
+    }
+
+    #index-content {
+        display: flex;
+        justify-content: space-between;
+        width: 33%;
+        height: 20rem;
+    }
+
+    #index-new-game-card,
+    #index-join-game-card {
+        flex: 1 0 45%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 2rem 0;
+        gap: 1rem;
+    }
+
+    #index-new-game-card > h2,
+    #index-join-game-card > h2 {
+        font-size: 2rem;
+    }
+
+    #index-select-packs,
+    #index-room-code {
+        margin-bottom: auto;
+    }
+
+    #index-divider {
+        flex: 1 0 10%;
+        display: flex;
+        justify-content: center;
+    }
+
+    #index-divider > div {
+        width: 1px;
+        background: black;
+    }
+
+    #index-select-packs {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .select-pack-card {
+        /* See https://moderncss.dev/pure-css-custom-checkbox-style/ */
+        width: 5rem;
+        height: 7rem;
+        position: relative;
+        display: flex;
+        justify-content: center;
+    }
+
+    .select-pack-label {
+        position: absolute;
+        font-size: 0.8rem;
+        margin-top: 1rem;
+        cursor: pointer;
+    }
+
+    .select-pack-option {
+        appearance: none;
+        -webkit-appearance: none;
+        background: white;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+        border-radius: 8px;
+        position: absolute;
+        cursor: pointer;
+        outline: none;
+    }
+
+    .select-pack-option:focus-visible {
+        outline: dashed 2px black;
+        outline-offset: 2px;
+    }
+
+    .select-pack-option::before {
+        content: '';
+        position: absolute;
+        height: 3rem;
+        width: 3rem;
+        background: transparent;
+        bottom: 1rem;
+        left: 1rem;
+        transform: scale(0);
+        transition: 120ms transform ease-in-out;
+        clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+    }
+    .select-pack-option:checked {
+        border: 2px solid var(--colour-highlight);
+    }
+
+    .select-pack-option:checked::before {
+        transform: scale(1);
+        background: var(--colour-highlight);
+    }
+
+    /* ROOM */
+    /* ----------------------------------------------------------------------------------------- */
     .banner {
         display: flex;
         align-items: center;
