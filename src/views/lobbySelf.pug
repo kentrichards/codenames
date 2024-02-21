@@ -1,7 +1,7 @@
 .player(id=`${username}`)
     h4= username
-    .team= ''
-    .role= ''
+    h3.team= ''
+    h3.role= ''
     button(id=`${username}` onclick="updatePlayerMsg('role', 'spymaster')") Spymaster 
     button(id=`${username}` onclick="updatePlayerMsg('role', 'operative')") Operative 
     button(id=`${username}` onclick="updatePlayerMsg('team', 'red')") Red 

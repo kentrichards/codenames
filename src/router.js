@@ -1,5 +1,5 @@
 import express from 'express'
-import { createRoom, getRoom, broadcast, removePlayer, applyAction, renderTemplate, getPlayerIndex } from './room.js'
+import { createRoom, getRoom, broadcast, removePlayer, applyAction, renderTemplate } from './room.js'
 
 const router = express.Router()
 

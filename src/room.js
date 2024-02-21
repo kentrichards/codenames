@@ -36,8 +36,9 @@ export function applyAction(room, ws, username, action) {
 
     if (type === 'userConnected') {
         addPlayer(room, username, ws)
-        const html = renderTemplate('playerBox', {username})
-        return { type: 'userConnected', payload: { player: username, html } }
+        const htmlSelf = renderTemplate('lobbySelf', {username})
+        const html = renderTemplate('lobbyPlayer', {username})
+        return { type: 'userConnected', payload: { player: username, self: htmlSelf, html } }
     }
 
     if (type === 'playerUpdate') {

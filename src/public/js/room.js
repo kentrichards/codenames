@@ -67,8 +67,8 @@ function openWebSocketConnection() {
             turnEl.innerText = newTurnMsg
         } else if (action.type === 'userConnected') {
             if (lobbyDialogEl) {
-                if (action.payload.player == getCookieValue('username')) playersDiv.innerHTML += action.payload.html
-                else addPlayerToLobby(action.payload.player)
+                if (action.payload.player === getCookieValue('username')) playersDiv.innerHTML += action.payload.self
+                else playersDiv.innerHTML += action.payload.html
             }
         } else if (action.type === 'userDisconnected') {
             teamsEl.innerHTML = action.payload.html
@@ -237,26 +237,6 @@ endTurnBtn.addEventListener('click', (/** @type {MouseEvent} */ ev) => {
     const action = { type: 'endTurnClicked' }
     socket.send(JSON.stringify(action))
 })
-
-function addPlayerToLobby(newPlayer) {
-    const playerBox = document.createElement('div')
-    playerBox.setAttribute('class', 'player')
-    playerBox.setAttribute('id', `${newPlayer}`)
-
-    const playerName = document.createElement('h4')
-    playerName.innerText = newPlayer
-    playerBox.appendChild(playerName)
-
-    const playerTeam = document.createElement('h3')
-    playerTeam.setAttribute('class', `${newPlayer} team`)
-    playerBox.appendChild(playerTeam)
-
-    const playerRole = document.createElement('h3')
-    playerRole.setAttribute('class', `${newPlayer} role`)
-    playerBox.appendChild(playerRole)
-
-    playersDiv.appendChild(playerBox)
-}
 
 function updatePlayerMsg(type, value) {
     const action = {
