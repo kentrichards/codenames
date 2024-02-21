@@ -36,8 +36,7 @@ export default expressWsInstance => {
         const players = room.players
         const gameState = room.gameState
         const cards = room.gameState.cards
-        const inProgress = room.gameState.inProgress
-        res.render('room', { roomCode, username, players, gameState, inProgress, cards })
+        res.render('room', { roomCode, username, players, gameState, cards })
 
         // TODO: Need to ensure user has a username
         // E.g. if someone clicks a link their friend sent them,

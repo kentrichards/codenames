@@ -18,7 +18,6 @@
 
 /**
  * @typedef {Object} GameState
- * @property {Boolean} inProgress
  * @property {GameMode} gameMode
  * @property {Card[]} cards
  * @property {Team} turn

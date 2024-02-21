@@ -28,7 +28,6 @@ export function newGameState(playsFirst, gameMode) {
         cards: getCards(playsFirst, gameMode),
         turn: playsFirst,
         state: 'playing',
-        inProgress: false,
         redScore,
         blueScore,
     }

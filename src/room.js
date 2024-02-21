@@ -56,7 +56,6 @@ export function applyAction(room, ws, username, action) {
     }
 
     if (type === 'startGame') {
-        room.gameState.inProgress = true
         const html = renderTemplate('playersTemplate', { players: room.players })
         return { type: 'startGame', payload: {html}}
     }

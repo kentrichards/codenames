@@ -2,15 +2,14 @@ extends layout
 include mixins
 
 block content
-    if !inProgress
-        dialog#lobby
-            h2 Lobby #{roomCode}
-            #players
-                +playerBoxes(players)
-            button(id="start-game") Start game
-            button#leave-lobby(href="/") Leave lobby
-        script(defer).
-            window.onload = () => document.getElementById('lobby').showModal()
+    dialog#lobby
+        h2 Lobby #{roomCode}
+        #players
+            +playerBoxes(players)
+        button(id="start-game") Start game
+        button#leave-lobby(href="/") Leave lobby
+    script(defer).
+        window.onload = () => document.getElementById('lobby').showModal()
             
     if !username
         dialog#usernameCheck
