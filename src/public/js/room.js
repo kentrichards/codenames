@@ -268,12 +268,10 @@ function addPlayerToLobby(newPlayer) {
 
     const playerTeam = document.createElement('h3')
     playerTeam.setAttribute('class', `${newPlayer} team`)
-    playerTeam.innerText = `${newPlayer.team}`
     playerBox.appendChild(playerTeam)
 
     const playerRole = document.createElement('h3')
     playerRole.setAttribute('class', `${newPlayer} role`)
-    playerRole.innerText = `${newPlayer.role}`
     playerBox.appendChild(playerRole)
 
     playersDiv.appendChild(playerBox)
