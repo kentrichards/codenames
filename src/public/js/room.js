@@ -68,7 +68,7 @@ function openWebSocketConnection() {
             turnEl.innerText = newTurnMsg
         } else if (action.type === 'userConnected') {
             if (lobbyDialogEl) {
-                if (action.payload.player == getCookieValue('username')) addSelfToLobby(action.payload.player)
+                if (action.payload.player == getCookieValue('username')) playersDiv.innerHTML += action.payload.html
                 else addPlayerToLobby(action.payload.player)
             }
         } else if (action.type === 'userDisconnected') {
@@ -239,24 +239,6 @@ endTurnBtn.addEventListener('click', (/** @type {MouseEvent} */ ev) => {
     socket.send(JSON.stringify(action))
 })
 
-// I hate this but I'm leaving it for now
-function addSelfToLobby(newPlayer) {
-    const playerBox = document.createElement('div')
-    playerBox.setAttribute('class', 'player')
-    playerBox.setAttribute('id', `${newPlayer}`)
-
-    const playerName = document.createElement('h4')
-    playerName.innerText += newPlayer
-    playerBox.appendChild(playerName)
-
-    addPlayerOption(playerBox, 'role', 'spymaster')
-    addPlayerOption(playerBox, 'role', 'operative')
-    addPlayerOption(playerBox, 'team', 'red')
-    addPlayerOption(playerBox, 'team', 'blue')
-
-    playersDiv.appendChild(playerBox)
-}
-
 function addPlayerToLobby(newPlayer) {
     const playerBox = document.createElement('div')
     playerBox.setAttribute('class', 'player')
@@ -275,12 +257,6 @@ function addPlayerToLobby(newPlayer) {
     playerBox.appendChild(playerRole)
 
     playersDiv.appendChild(playerBox)
-}
-
-function addPlayerOption(parent, type, value) {
-    const newId = `btn-${value}`
-    const html = `<button id="${newId}" onclick="updatePlayerMsg('${type}', '${value}')">${value}</button>`
-    parent.innerHTML += html
 }
 
 function updatePlayerMsg(type, value) {
