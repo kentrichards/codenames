@@ -45,10 +45,9 @@ function openWebSocketConnection() {
                     roleElem[0].innerHTML = newInfo
                 }
             } catch (error) {
-                console.log(`err: ${error}, player ${action.payload.player} not found`)
+                console.log(`${error}, player ${action.payload.player} not found`)
             }
         } else if (action.type === 'startGame') {
-            console.log('Game has begun!')
             teamsEl.innerHTML = action.payload.html
             lobbyDialogEl.close()
             lobbyDialogEl.parentElement.removeChild(lobbyDialogEl)
