@@ -9,13 +9,40 @@ const agents = {
 }
 
 /**
+ * @param {Team} playsFirst the team that will play first
+ * @param {GameMode} gameMode determines the set of cards to draw from
+ * @returns {GameState} a new game state object, representing a new game
+ */
+export function newGameState(playsFirst, gameMode) {
+    let redScore, blueScore
+    if (playsFirst === 'red') {
+        redScore = 9
+        blueScore = 8
+    } else {
+        redScore = 8
+        blueScore = 9
+    }
+
+    return {
+        gameMode,
+        cards: getCards(playsFirst, gameMode),
+        turn: playsFirst,
+        state: 'playing',
+        inProgress: false,
+        redScore,
+        blueScore,
+    }
+}
+
+/**
  * Draw 25 cards of the type given by gameMode
+ * @param {Team} playsFirst the team with more cards
  * @param {'default' | 'duet' | 'undercover'} gameMode
  * @returns {Card[]} the 25 card deck, in agent:role pairs
  */
-export function getCards(gameMode = 'default') {
-    const roles = [
-        'red',
+export function getCards(playsFirst = 'red', gameMode = 'default') {
+    const types = /** @type {CardType[]} */ ([
+        playsFirst,
         'red',
         'red',
         'red',
@@ -40,12 +67,12 @@ export function getCards(gameMode = 'default') {
         'neutral',
         'neutral',
         'assassin',
-    ]
+    ])
     const agents = drawAgents(gameMode)
-    shuffle(roles)
-    const cards = []
+    shuffle(types)
+    const cards = /** @type {Card[]} */ ([])
     agents.forEach((agent, i) => {
-        cards.push({ agent, role: roles[i], revealed: false })
+        cards.push({ agent, cardType: types[i], revealed: false })
     })
     return cards
 }

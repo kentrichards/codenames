@@ -1,5 +1,5 @@
 import express from 'express'
-import { createRoom, getRoom, broadcast, removePlayer, getPlayerIndex } from './room.js'
+import { createRoom, getRoom, broadcast, removePlayer, applyAction, renderTemplate, getPlayerIndex } from './room.js'
 
 const router = express.Router()
 
@@ -33,10 +33,11 @@ export default expressWsInstance => {
             return
         }
         const username = req.cookies.username
-        const cards = room.gameState.cards
         const players = room.players
+        const gameState = room.gameState
+        const cards = room.gameState.cards
         const inProgress = room.gameState.inProgress
-        res.render('room', { roomCode, username, cards, inProgress, players })
+        res.render('room', { roomCode, username, players, gameState, inProgress, cards })
 
         // TODO: Need to ensure user has a username
         // E.g. if someone clicks a link their friend sent them,
@@ -53,56 +54,18 @@ export default expressWsInstance => {
 
         ws.on('message', (/** @type {String} */ msg) => {
             const action = JSON.parse(msg)
-
-            room.gameState.idleTime = 0
-
-            if (action.type === 'userConnected') {
-                const newPlayer = {
-                    username,
-                    team: '',
-                    role: '',
-                    socket: ws,
-                }
-
-                room.players.push(newPlayer)
-
-                broadcast(room, 'playerJoin', {
-                    player: newPlayer,
-                    msg: `User ${username} joined room ${roomCode}`,
-                })
-            } else if (action.type === 'playerUpdate') {
-                const player = room.players[getPlayerIndex(room, ws)]
-
-                if (action.updateType === 'role') {
-                    player.role = action.updateValue
-                } else if (action.updateType === 'team') {
-                    player.team = action.updateValue
-                }
-
-                broadcast(room, 'playerUpdate', {
-                    player: player.username,
-                    updateType: action.updateType,
-                    updateValue: action.updateValue
-                })
-            } else if (action.type === 'cardClicked') {
-                const card = room.gameState.cards.find(card => card.agent === action.payload)
-                card.revealed = true
-                broadcast(room, 'revealCard', { agent: card.agent, role: card.role })
-            } else if (action.type === 'startGame') {
-                room.gameState.inProgress = true
-                broadcast(room, 'startGame', null)
-            } else {
-                console.error(`Unknown message received: ${msg}`)
+            room.idleTime = 0
+            const result = applyAction(room, ws, username, action)
+            if (result) {
+                broadcast(room, result.type, result.payload)
             }
         })
 
         ws.on('close', () => {
-            room.gameState.idleTime = 0
-            broadcast(room, 'playerLeave', { 
-                playerId: username,
-                msg: `User ${username} left the room`,
-            })
+            room.idleTime = 0
             removePlayer(room, ws)
+            const html = renderTemplate('playersTemplate', { players: room.players })
+            broadcast(room, 'userDisconnected', {html: html, player: username})
         })
     })
 

@@ -1,0 +1,21 @@
+mixin players(players)
+    p Red Team
+    ul#red-team
+        each player in players
+            if player.team === 'red'
+                li= player.username
+    p Blue Team
+    ul#blue-team
+        each player in players
+            if player.team === 'blue'
+                li= player.username
+
+mixin board(cards)
+    each card, idx in cards
+        button.card(class=card.revealed ? card.cardType : '' data-index=idx)= card.agent
+
+mixin scores(redScore, blueScore)
+    p#scores
+        span#score-red= redScore
+        | -
+        span#score-blue= blueScore

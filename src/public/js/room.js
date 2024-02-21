@@ -17,17 +17,6 @@ function openWebSocketConnection() {
 
         if (action.type === 'redirect') {
             window.location.href = action.payload
-        } else if (action.type === 'playerJoin') {
-            if (lobbyDialogEl) {
-                if (action.payload.player.username == getCookieValue('username')) addSelfToLobby(action.payload.player)
-                else addPlayerToLobby(action.payload.player)
-            }
-            console.log(`${action.payload.msg}`)
-        } else if (action.type === 'playerLeave') {
-            if (lobbyDialogEl) {
-                removePlayer(action.payload.playerId)
-            }
-            console.log(`${action.payload.msg}`)
         } else if (action.type === 'playerUpdate') {
             const newInfo = action.payload.updateValue
             try {
@@ -60,18 +49,58 @@ function openWebSocketConnection() {
             }
         } else if (action.type === 'startGame') {
             console.log('Game has begun!')
+            teamsEl.innerHTML = action.payload.html
             lobbyDialogEl.close()
             lobbyDialogEl.parentElement.removeChild(lobbyDialogEl)
         } else if (action.type === 'message') {
+            // TODO: Remove eventually
             console.log('message received', action.payload)
         } else if (action.type === 'revealCard') {
-            const card = cardEls.find(card => card.innerText === action.payload.agent)
-            card.className += ` ${action.payload.role}`
+            const { agent, cardType, scoreMsg } = action.payload
+            const card = cardEls.find(card => card.innerText === agent)
+            card.classList.add(cardType)
+            scoreEl.innerHTML = scoreMsg
+        } else if (action.type === 'endTurnForced') {
+            const { agent, cardType, scoreMsg, newTurnMsg } = action.payload
+            const card = cardEls.find(card => card.innerText === agent)
+            card.classList.add(cardType)
+            scoreEl.innerHTML = scoreMsg
+            turnEl.innerText = newTurnMsg
+        } else if (action.type === 'userConnected') {
+            if (lobbyDialogEl) {
+                if (action.payload.player == getCookieValue('username')) addSelfToLobby(action.payload.player)
+                else addPlayerToLobby(action.payload.player)
+            }
+        } else if (action.type === 'userDisconnected') {
+            teamsEl.innerHTML = action.payload.html
+            if (lobbyDialogEl) {
+                removePlayer(action.payload.player)
+            }
+        } else if (action.type === 'newGame') {
+            const { newBoard, scoreMsg, turnMsg } = action.payload
+            boardEl.innerHTML = newBoard
+            scoreEl.innerHTML = scoreMsg
+            turnEl.innerText = turnMsg
+            cardEls = /** @type {HTMLButtonElement[]} */ (Array.from(document.getElementsByClassName('card')))
+            attachCardListeners()
+        } else if (action.type === 'endTurnClicked') {
+            turnEl.innerText = action.payload
+        } else if (action.type === 'gameOver') {
+            const { agent, cardType, winnerMsg, scoreMsg } = action.payload
+            const card = cardEls.find(card => card.innerText === agent)
+            card.classList.add(cardType)
+            scoreEl.innerHTML = scoreMsg
+            turnEl.innerText = winnerMsg
         } else {
             console.error(`Unknown message received: ${ev.data}`)
         }
     })
 }
+
+const scoreEl = /** @type {HTMLParagraphElement} */ (document.getElementById('scores'))
+
+const turnEl = /** @type {HTMLParagraphElement} */ (document.querySelector('#turn > p'))
+const teamsEl = /** @type {HTMLDivElement} */ (document.getElementById('teams'))
 
 const usernameDialogEl = /** @type {HTMLDialogElement} */ (document.getElementById('usernameCheck'))
 const usernameInput = /** @type {HTMLInputElement} */ (document.getElementById('username'))
@@ -132,17 +161,50 @@ leaveRoomBtn.addEventListener('click', (/** @type MouseEvent*/ ev) => {
     window.location.href = '/'
 })
 
-const cardEls = /** @type {HTMLButtonElement[]} */ (Array.from(document.getElementsByClassName('card')))
-cardEls.forEach(agent => {
-    agent.addEventListener('click', ev => {
-        ev.preventDefault()
-        const action = {
-            type: 'cardClicked',
-            payload: agent.innerText,
-        }
-        socket.send(JSON.stringify(action))
-    })
+let linkCopiedTimeout
+let linkRecentlyCopied = false
+const copyLinkBtn = /** @type {HTMLButtonElement} */ (document.getElementById('copy-link'))
+const copyLinkBtnWidth = copyLinkBtn.getBoundingClientRect().width
+const copyLinkBtnHeight = copyLinkBtn.getBoundingClientRect().height
+const copyLinkBtnContent = copyLinkBtn.innerHTML
+copyLinkBtn.addEventListener('click', (/** @type MouseEvent */ ev) => {
+    ev.preventDefault()
+    const inviteLink = window.location.href
+
+    navigator.clipboard
+        .writeText(inviteLink)
+        .then(() => {
+            if (!linkRecentlyCopied) {
+                copyLinkBtn.innerHTML = 'Copied!'
+                copyLinkBtn.style.width = `${copyLinkBtnWidth}px`
+                copyLinkBtn.style.height = `${copyLinkBtnHeight}px`
+                linkRecentlyCopied = true
+            } else {
+                clearTimeout(linkCopiedTimeout)
+            }
+
+            linkCopiedTimeout = setTimeout(() => {
+                copyLinkBtn.innerHTML = copyLinkBtnContent
+                linkRecentlyCopied = false
+            }, 3000)
+        })
+        .catch(() => console.error('Failed to copy invite link:', inviteLink))
 })
+
+let cardEls = /** @type {HTMLButtonElement[]} */ (Array.from(document.getElementsByClassName('card')))
+function attachCardListeners() {
+    cardEls.forEach(agent => {
+        agent.addEventListener('click', ev => {
+            ev.preventDefault()
+            const action = {
+                type: 'cardClicked',
+                payload: agent.innerText,
+            }
+            socket.send(JSON.stringify(action))
+        })
+    })
+}
+attachCardListeners()
 
 const boardEl = document.getElementById('board')
 boardEl.addEventListener('keydown', ev => {
@@ -163,14 +225,28 @@ boardEl.addEventListener('keydown', ev => {
     }
 })
 
+const newGameBtn = /** @type {HTMLButtonElement} */ (document.getElementById('new-game'))
+newGameBtn.addEventListener('click', (/** @type {MouseEvent} */ ev) => {
+    ev.preventDefault()
+    const action = { type: 'newGame' }
+    socket.send(JSON.stringify(action))
+})
+
+const endTurnBtn = /** @type {HTMLButtonElement} */ (document.getElementById('end-turn'))
+endTurnBtn.addEventListener('click', (/** @type {MouseEvent} */ ev) => {
+    ev.preventDefault()
+    const action = { type: 'endTurnClicked' }
+    socket.send(JSON.stringify(action))
+})
+
 // I hate this but I'm leaving it for now
 function addSelfToLobby(newPlayer) {
     const playerBox = document.createElement('div')
     playerBox.setAttribute('class', 'player')
-    playerBox.setAttribute('id', `${newPlayer.username}`)
+    playerBox.setAttribute('id', `${newPlayer}`)
 
     const playerName = document.createElement('h4')
-    playerName.innerText += newPlayer.username
+    playerName.innerText += newPlayer
     playerBox.appendChild(playerName)
 
     addPlayerOption(playerBox, 'role', 'spymaster')
@@ -184,19 +260,19 @@ function addSelfToLobby(newPlayer) {
 function addPlayerToLobby(newPlayer) {
     const playerBox = document.createElement('div')
     playerBox.setAttribute('class', 'player')
-    playerBox.setAttribute('id', `${newPlayer.username}`)
+    playerBox.setAttribute('id', `${newPlayer}`)
 
     const playerName = document.createElement('h4')
-    playerName.innerText = newPlayer.username
+    playerName.innerText = newPlayer
     playerBox.appendChild(playerName)
 
     const playerTeam = document.createElement('h3')
-    playerTeam.setAttribute('class', `${newPlayer.username} team`)
+    playerTeam.setAttribute('class', `${newPlayer} team`)
     playerTeam.innerText = `${newPlayer.team}`
     playerBox.appendChild(playerTeam)
 
     const playerRole = document.createElement('h3')
-    playerRole.setAttribute('class', `${newPlayer.username} role`)
+    playerRole.setAttribute('class', `${newPlayer} role`)
     playerRole.innerText = `${newPlayer.role}`
     playerBox.appendChild(playerRole)
 
@@ -212,8 +288,10 @@ function addPlayerOption(parent, type, value) {
 function updatePlayerMsg(type, value) {
     const action = {
         type: 'playerUpdate',
-        updateType: type,
-        updateValue: value,
+        payload: {
+            updateType: type,
+            updateValue: value,
+        }
     }
     socket.send(JSON.stringify(action))
     console.log(action)
