@@ -179,6 +179,7 @@ export function renderTemplate(templateName, locals) {
 }
 
 /**
+ * @param {GameMode} gameMode 
  * @returns {string} the roomCode of the newly created room
  */
 export function createRoom(gameMode) {
@@ -195,6 +196,9 @@ export function createRoom(gameMode) {
     return newRoom.roomCode
 }
 
+/**
+ * @param {Room} room 
+ */
 export function closeRoom(room) {
     room.players.forEach(player => redirectSocket(player.socket, '/'))
     clearInterval(room.idleTimer)
@@ -217,6 +221,12 @@ export function addPlayer(room, username, socket) {
     })
 }
 
+/**
+ * 
+ * @param {Room} room 
+ * @param {import('ws')} socket 
+ * @returns player's index in player list
+ */
 export function getPlayerIndex(room, socket) {
     for (let i = 0; i < room.players.length; i++) {
         if (room.players[i].socket == socket) {
@@ -227,11 +237,16 @@ export function getPlayerIndex(room, socket) {
     return -1
 }
 
+/**
+ * 
+ * @param {Room} room 
+ * @param {import('ws')} socket 
+ */
 export function removePlayer(room, socket) {
     for (let i = 0; i < room.players.length; i++) {
         if (room.players[i].socket === socket) {
             room.players.splice(i, 1)
-            return
+            break
         }
     }
 }
@@ -245,6 +260,11 @@ export function getRoom(/** @type {String} */ roomCode) {
     return activeRooms.find(room => room.roomCode === roomCode)
 }
 
+/**
+ * Redirects a connection to a new page
+ * @param {*} socket 
+ * @param {string} path 
+ */
 export function redirectSocket(socket, path) {
     const redirect = { type: 'redirect', payload: path }
     socket.send(JSON.stringify(redirect))
@@ -262,6 +282,10 @@ export function broadcast(room, type, payload) {
     })
 }
 
+/**
+ * Close a room if it has been idle for a certain amount of time
+ * @param {Room} room 
+ */
 function idleTimeout(room) {
     room.idleTime += 1
 
@@ -272,6 +296,10 @@ function idleTimeout(room) {
     }
 }
 
+/**
+ * 
+ * @returns {string} a unique 4-letter code
+ */
 function generateRoomCode() {
     const alphabet = [
         'A',
