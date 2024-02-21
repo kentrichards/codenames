@@ -19,3 +19,11 @@ mixin scores(redScore, blueScore)
         span#score-red= redScore
         | -
         span#score-blue= blueScore
+
+mixin playerBoxes(players)
+    each player in players
+        //- This would probably be a good spot for those player IDs that we were talking about
+        div.player(id=`${player.username}` class=`${player.team} ${player.role}`)
+            h4= player.username
+            h3(class=`${player.username} team`)= `${player.team}`
+            h3(class=`${player.username} role`)= `${player.role}`
