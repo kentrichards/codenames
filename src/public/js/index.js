@@ -1,5 +1,6 @@
 const roomCodeInput = /** @type {HTMLInputElement} */ (document.getElementById('room-code'))
 const joinGameBtn = /** @type {HTMLButtonElement} */ (document.getElementById('join-game'))
+const aboutGameBtn = /** @type {HTMLButtonElement} */ (document.getElementById('about-game'))
 
 roomCodeInput.addEventListener('input', () => {
     roomCodeInput.value = roomCodeInput.value.toUpperCase()
@@ -36,4 +37,9 @@ joinGameBtn.addEventListener('click', (/** @type {MouseEvent} */ ev) => {
         .catch(err => {
             console.error(`Error joining game: ${err.message}`)
         })
+})
+
+aboutGameBtn.addEventListener('click', (/** @type {MouseEvent} */ ev) => {
+    ev.preventDefault()
+    window.location.href = '/about'
 })

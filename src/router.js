@@ -9,6 +9,10 @@ export default expressWsInstance => {
         res.render('index')
     })
 
+    router.get('/about', (req, res) => {
+        res.render('about')
+    })
+
     router.get('/createGame', (req, res) => {
         const mode = req.query.mode
         const roomCode = createRoom(mode)
