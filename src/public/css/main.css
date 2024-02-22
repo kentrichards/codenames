@@ -41,33 +41,6 @@
 }
 
 @layer components {
-    #lobby {
-        width: 80%;
-        height: 80%;
-    }
-
-    #players {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        grid-auto-rows: minmax(5rem, auto);
-        gap: 1rem;
-    }
-
-    .player {
-        background: #fff;
-        border: 2px solid #999;
-        display: block;
-        justify-content: center;
-    }
-
-    .red {
-        background: red;
-    }
-
-    .blue {
-        background: blue;
-    }
-
     .btn {
         display: flex;
         justify-content: center;
@@ -214,8 +187,59 @@
         background: var(--colour-highlight);
     }
 
+    /* LOBBY */
+    /* --------------------------------------------------------------------- */
+    #lobby {
+        width: 80%;
+        height: 80%;
+    }
+
+    #lobby-players {
+        display: flex;
+        justify-content: space-around;
+        width: 100%;
+        height: 80%;
+        margin-top: 10px;
+    }
+
+    .lobby-player {
+        width: 50%;
+        height: 50%;
+        min-height: fit-content;
+        border: 2px solid #999;
+        padding: 5px;
+        display: flex;
+        flex-wrap: wrap;
+        border-radius: 8px;
+        justify-content: space-around;
+    }
+
+    .lobby-player-info {
+        width: 100%;
+        min-height: fit-content;
+        margin-bottom: 10px;
+    }
+
+    .lobby-player-options {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        row-gap: 10px;
+    }
+
+    #lobby-players > .red {
+        color: red;
+        border-color: red;
+    }
+
+    #lobby-players > .blue {
+        color: blue;
+        border-color: blue;
+    }
+
     /* ROOM */
-    /* ----------------------------------------------------------------------------------------- */
+    /* --------------------------------------------------------------------- */
     .banner {
         display: flex;
         align-items: center;

@@ -1,8 +1,10 @@
-.player(id=`${username}`)
-    h4= username
-    h3.team= ''
-    h3.role= ''
-    button(id=`${username}` onclick="updatePlayerMsg('role', 'spymaster')") Spymaster 
-    button(id=`${username}` onclick="updatePlayerMsg('role', 'operative')") Operative 
-    button(id=`${username}` onclick="updatePlayerMsg('team', 'red')") Red 
-    button(id=`${username}` onclick="updatePlayerMsg('team', 'blue')") Blue 
+.lobby-player(id=`${username}`)
+    .lobby-player-info
+        h3= username
+        h4.team= ''
+        h4.role= ''
+    .lobby-player-options
+        button.select-option(id=`${username}` onclick="updatePlayerMsg('role', 'spymaster')") Spymaster
+        button.select-option.red(id=`${username}` onclick="updatePlayerMsg('team', 'red')") Red 
+        button.select-option(id=`${username}` onclick="updatePlayerMsg('role', 'operative')") Operative
+        button.select-option.blue(id=`${username}` onclick="updatePlayerMsg('team', 'blue')") Blue 

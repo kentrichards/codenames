@@ -67,8 +67,8 @@ function openWebSocketConnection() {
             turnEl.innerText = newTurnMsg
         } else if (action.type === 'userConnected') {
             if (lobbyDialogEl) {
-                if (action.payload.player === getCookieValue('username')) playersDiv.innerHTML += action.payload.self
-                else playersDiv.innerHTML += action.payload.html
+                if (action.payload.player === getCookieValue('username')) lobbyPlayersDiv.innerHTML += action.payload.self
+                else lobbyPlayersDiv.innerHTML += action.payload.html
             }
         } else if (action.type === 'userDisconnected') {
             teamsEl.innerHTML = action.payload.html
@@ -134,7 +134,7 @@ if (usernameDialogEl && usernameInput && submitBtn) {
 const lobbyDialogEl = /** @type {HTMLDialogElement} */ (document.getElementById('lobby'))
 const startGameBtn = /** @type {HTMLButtonElement} */ (document.getElementById('start-game'))
 const leaveLobbyBtn = /** @type {HTMLButtonElement} */ (document.getElementById('leave-lobby'))
-const playersDiv = /** @type {HTMLDivElement} */ (document.getElementById('players'))
+const lobbyPlayersDiv = /** @type {HTMLDivElement} */ (document.getElementById('lobby-players'))
 if (lobbyDialogEl) {
     /* Prevent the 'Esc' key from closing the dialog */
     lobbyDialogEl.addEventListener('cancel', ev => ev.preventDefault())

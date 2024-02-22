@@ -4,7 +4,7 @@ include mixins
 block content
     dialog#lobby
         h2 Lobby #{roomCode}
-        #players
+        #lobby-players
             +playerBoxes(players)
         button(id="start-game") Start game
         button#leave-lobby(href="/") Leave lobby
